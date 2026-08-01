@@ -27,9 +27,14 @@ const bangers = Bangers({
 });
 
 export const metadata: Metadata = {
-  title: "Japan Trip Tracker",
+  title: "Travel Planner",
   description:
     "여행 전 / 중 / 후 3단계로 나눠 일본 여행을 완벽하게 정리하는 TODO 웹앱",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icon-192.png",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export const viewport: Viewport = {

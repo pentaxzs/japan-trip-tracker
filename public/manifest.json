@@ -1,0 +1,21 @@
+{
+  "name": "Travel Planner",
+  "short_name": "Travel",
+  "description": "일본 여행 TODO 기록 앱",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#5CE0D2",
+  "theme_color": "#5CE0D2",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
