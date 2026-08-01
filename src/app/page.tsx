@@ -1,65 +1,191 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { Archive } from "lucide-react";
+import { useTodos } from "@/hooks/useTodos";
+import Header from "@/components/Header";
+import TabNav from "@/components/TabNav";
+import HeroSection from "@/components/HeroSection";
+import ProgressBar from "@/components/ProgressBar";
+import TodoList from "@/components/TodoList";
+import TodoInput from "@/components/TodoInput";
+import TripInfoBar from "@/components/TripInfoBar";
+import ArchivePage from "@/components/ArchivePage";
 
 export default function Home() {
+  const {
+    phase,
+    setPhase,
+    todos,
+    addTodo,
+    toggleTodo,
+    deleteTodo,
+    completedCount,
+    totalCount,
+    progress,
+    isLoaded,
+    tripInfo,
+    updateTripInfo,
+    endTrip,
+  } = useTodos();
+
+  const [showArchive, setShowArchive] = useState(false);
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
+
+  if (!isLoaded) {
+    return (
+      <div
+        className="min-h-dvh flex items-center justify-center"
+        style={{ backgroundColor: "var(--canvas)" }}
+      >
+        <div className="text-5xl">✈️</div>
+      </div>
+    );
+  }
+
+  if (showArchive) {
+    return <ArchivePage onBack={() => setShowArchive(false)} />;
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div
+      data-mode={phase}
+      className="mode-container min-h-dvh flex flex-col"
+      style={{ backgroundColor: "var(--mode-bg)" }}
+    >
+      <div className="w-full max-w-[480px] mx-auto flex flex-col min-h-dvh">
+        {/* Header — with archive button */}
+        <div className="relative">
+          <Header />
+          <button
+            onClick={() => setShowArchive(true)}
+            className="absolute right-[16px] top-1/2 -translate-y-1/2 flex items-center justify-center"
+            style={{
+              width: "32px",
+              height: "32px",
+              borderRadius: "9999px",
+              backgroundColor: "var(--surface-strong)",
+              color: "var(--muted)",
+            }}
+            aria-label="여행 아카이브"
+          >
+            <Archive size={16} />
+          </button>
+        </div>
+
+        {/* Trip Info — destination, dates, weather */}
+        <TripInfoBar
+          destination={tripInfo.destination}
+          departureDate={tripInfo.departureDate}
+          returnDate={tripInfo.returnDate}
+          onDestinationChange={(dest) => updateTripInfo({ destination: dest })}
+          onDepartureDateChange={(date) => updateTripInfo({ departureDate: date })}
+          onReturnDateChange={(date) => updateTripInfo({ returnDate: date })}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+
+        {/* Tab Navigation — 48px fixed, Airbnb nav-link style */}
+        <TabNav currentPhase={phase} onPhaseChange={setPhase} />
+
+        {/* Hero Section — gradient background */}
+        <div
+          className="w-full"
+          style={{ backgroundImage: "var(--mode-hero-gradient)" }}
+        >
+          <HeroSection
+            phase={phase}
+            departureDate={tripInfo.departureDate}
+            returnDate={tripInfo.returnDate}
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Progress Bar */}
+        <div className="py-[8px]">
+          <ProgressBar
+            completedCount={completedCount}
+            totalCount={totalCount}
+            progress={progress}
+          />
         </div>
-      </main>
+
+        {/* Todo List — scrollable area */}
+        <TodoList
+          todos={todos}
+          phase={phase}
+          onToggle={toggleTodo}
+          onDelete={deleteTodo}
+        />
+
+        {/* End Trip Button — only on "after" tab */}
+        {phase === "after" && (
+          <div className="px-[16px] py-[12px]">
+            {showEndConfirm ? (
+              <div
+                className="p-[16px] text-center flex flex-col gap-[12px]"
+                style={{
+                  backgroundColor: "var(--surface-soft)",
+                  borderRadius: "14px",
+                  border: "1px solid var(--hairline)",
+                }}
+              >
+                <p className="text-body-md" style={{ color: "var(--ink)" }}>
+                  이 여행을 아카이브하고 새 여행을 시작할까요?
+                </p>
+                <div className="flex gap-[8px]">
+                  <button
+                    onClick={() => setShowEndConfirm(false)}
+                    className="flex-1 h-[48px] text-button-md"
+                    style={{
+                      borderRadius: "8px",
+                      border: "1px solid var(--hairline)",
+                      backgroundColor: "var(--canvas)",
+                      color: "var(--ink)",
+                    }}
+                  >
+                    취소
+                  </button>
+                  <button
+                    onClick={() => {
+                      endTrip();
+                      setShowEndConfirm(false);
+                    }}
+                    className="flex-1 h-[48px] text-button-md"
+                    style={{
+                      borderRadius: "8px",
+                      backgroundColor: "var(--mode-accent)",
+                      color: "var(--on-primary)",
+                    }}
+                  >
+                    여행 종료
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowEndConfirm(true)}
+                className="w-full h-[48px] text-button-md"
+                style={{
+                  borderRadius: "8px",
+                  backgroundColor: "var(--mode-accent)",
+                  color: "var(--on-primary)",
+                }}
+              >
+                🎌 여행 종료 & 아카이브
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Input Area — pinned to bottom */}
+        <div
+          className="sticky bottom-0 border-t"
+          style={{
+            backgroundColor: "var(--mode-bg)",
+            borderColor: "var(--hairline)",
+          }}
+        >
+          <TodoInput onAdd={addTodo} />
+        </div>
+      </div>
     </div>
   );
 }

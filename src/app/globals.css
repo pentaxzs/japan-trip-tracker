@@ -1,26 +1,301 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: 'Inter', 'Noto Sans KR', -apple-system, system-ui, Roboto, 'Helvetica Neue', sans-serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* ----------------------------------------------------------------
+   * Colors — Airbnb core palette (from DESIGN.md)
+   * ---------------------------------------------------------------- */
+  --color-airbnb-rausch: #ff385c;
+  --color-airbnb-active: #e00b41;
+  --color-airbnb-disabled: #ffd1da;
+  --color-airbnb-canvas: #ffffff;
+  --color-airbnb-soft: #f7f7f7;
+  --color-airbnb-strong: #f2f2f2;
+  --color-airbnb-hairline: #dddddd;
+  --color-airbnb-hairline-soft: #ebebeb;
+  --color-airbnb-border-strong: #c1c1c1;
+  --color-airbnb-ink: #222222;
+  --color-airbnb-body: #3f3f3f;
+  --color-airbnb-muted: #6a6a6a;
+  --color-airbnb-muted-soft: #929292;
+  --color-airbnb-error: #c13515;
+  --color-airbnb-on-primary: #ffffff;
+
+  /* Before — 설레임 (accent = Rausch) */
+  --color-before-accent: #ff385c;
+  --color-before-accent-active: #e00b41;
+  --color-before-accent-light: #ffd1da;
+  --color-before-accent-glow: #ff6b6b;
+
+  /* During — 재미 (accent = Amber) */
+  --color-during-accent: #F59E0B;
+  --color-during-accent-active: #D97706;
+  --color-during-accent-light: #FDE68A;
+  --color-during-accent-glow: #FBBF24;
+
+  /* After — 차분함 (accent = Violet) */
+  --color-after-accent: #7C3AED;
+  --color-after-accent-active: #6D28D9;
+  --color-after-accent-light: #DDD6FE;
+  --color-after-accent-glow: #8B5CF6;
+
+  /* ----------------------------------------------------------------
+   * Typography Scale — Airbnb DESIGN.md exact values
+   * Inter as open-source substitute for Airbnb Cereal VF
+   * ---------------------------------------------------------------- */
+  --text-display-xl: 28px;
+  --text-display-xl--line-height: 1.43;
+  --text-display-xl--letter-spacing: 0;
+  --text-display-xl--font-weight: 700;
+
+  --text-display-lg: 22px;
+  --text-display-lg--line-height: 1.18;
+  --text-display-lg--letter-spacing: -0.44px;
+  --text-display-lg--font-weight: 500;
+
+  --text-display-md: 21px;
+  --text-display-md--line-height: 1.43;
+  --text-display-md--letter-spacing: 0;
+  --text-display-md--font-weight: 700;
+
+  --text-display-sm: 20px;
+  --text-display-sm--line-height: 1.20;
+  --text-display-sm--letter-spacing: -0.18px;
+  --text-display-sm--font-weight: 600;
+
+  --text-title-md: 16px;
+  --text-title-md--line-height: 1.25;
+  --text-title-md--font-weight: 600;
+
+  --text-title-sm: 16px;
+  --text-title-sm--line-height: 1.25;
+  --text-title-sm--font-weight: 500;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.5;
+  --text-body-md--font-weight: 400;
+
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.43;
+  --text-body-sm--font-weight: 400;
+
+  --text-caption: 14px;
+  --text-caption--line-height: 1.29;
+  --text-caption--font-weight: 500;
+
+  --text-caption-sm: 13px;
+  --text-caption-sm--line-height: 1.23;
+  --text-caption-sm--font-weight: 400;
+
+  --text-badge: 11px;
+  --text-badge--line-height: 1.18;
+  --text-badge--font-weight: 600;
+
+  --text-button-md: 16px;
+  --text-button-md--line-height: 1.25;
+  --text-button-md--font-weight: 500;
+
+  --text-button-sm: 14px;
+  --text-button-sm--line-height: 1.29;
+  --text-button-sm--font-weight: 500;
+
+  --text-nav-link: 16px;
+  --text-nav-link--line-height: 1.25;
+  --text-nav-link--font-weight: 600;
+
+  /* ----------------------------------------------------------------
+   * Spacing — Airbnb 4px-based (from DESIGN.md)
+   * ---------------------------------------------------------------- */
+  --spacing-xxs: 2px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-base: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  --spacing-section: 64px;
+
+  /* ----------------------------------------------------------------
+   * Border Radius — Airbnb rounding system (from DESIGN.md)
+   * ---------------------------------------------------------------- */
+  --radius-none: 0;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* ----------------------------------------------------------------
+   * Box Shadow — Airbnb single tier (from DESIGN.md)
+   * ---------------------------------------------------------------- */
+  --shadow-airbnb: rgba(0,0,0,0.02) 0 0 0 1px, rgba(0,0,0,0.04) 0 2px 6px, rgba(0,0,0,0.1) 0 4px 8px;
+  --shadow-card-hover: 0 6px 20px rgba(0,0,0,0.12);
+
+  /* ----------------------------------------------------------------
+   * Layout
+   * ---------------------------------------------------------------- */
+  --container-app: 480px;
+
+  /* ----------------------------------------------------------------
+   * Animations
+   * ---------------------------------------------------------------- */
+  --animate-slide-in: slideIn 300ms ease-out;
+  --animate-check-pop: checkPop 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-fade-in: fadeIn 400ms ease-in-out;
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes checkPop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes slideOutRight {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+      max-height: 60px;
+    }
+    to {
+      opacity: 0;
+      transform: translateX(20px);
+      max-height: 0;
+      margin: 0;
+      padding: 0;
+    }
   }
 }
 
+/* ================================================================
+ * Mode-specific CSS custom properties
+ * Airbnb tokens as base, only accent overrides per mode
+ * ================================================================ */
+
+:root {
+  /* Airbnb core — shared across all modes */
+  --canvas: #ffffff;
+  --surface-soft: #f7f7f7;
+  --surface-strong: #f2f2f2;
+  --hairline: #dddddd;
+  --hairline-soft: #ebebeb;
+  --border-strong: #c1c1c1;
+  --ink: #222222;
+  --body-text: #3f3f3f;
+  --muted: #6a6a6a;
+  --muted-soft: #929292;
+  --error: #c13515;
+  --on-primary: #ffffff;
+}
+
+/* === Before Mode — accent: Rausch #ff385c === */
+[data-mode="before"] {
+  --mode-bg: var(--canvas);
+  --mode-bg-soft: var(--surface-soft);
+  --mode-hero-gradient: linear-gradient(180deg, var(--surface-soft) 0%, var(--surface-strong) 100%);
+  --mode-accent: #ff385c;
+  --mode-accent-active: #e00b41;
+  --mode-accent-light: #ffd1da;
+  --mode-accent-glow: #ff6b6b;
+  --mode-hairline: var(--hairline);
+  --mode-complete-bg: var(--surface-soft);
+  --mode-complete-text: var(--muted-soft);
+}
+
+/* === During Mode — accent: Amber #F59E0B === */
+[data-mode="during"] {
+  --mode-bg: var(--canvas);
+  --mode-bg-soft: var(--surface-soft);
+  --mode-hero-gradient: linear-gradient(180deg, var(--surface-soft) 0%, var(--surface-strong) 100%);
+  --mode-accent: #F59E0B;
+  --mode-accent-active: #D97706;
+  --mode-accent-light: #FDE68A;
+  --mode-accent-glow: #FBBF24;
+  --mode-hairline: var(--hairline);
+  --mode-complete-bg: var(--surface-soft);
+  --mode-complete-text: var(--muted-soft);
+}
+
+/* === After Mode — accent: Violet #7C3AED === */
+[data-mode="after"] {
+  --mode-bg: var(--canvas);
+  --mode-bg-soft: var(--surface-soft);
+  --mode-hero-gradient: linear-gradient(180deg, var(--surface-soft) 0%, var(--surface-strong) 100%);
+  --mode-accent: #7C3AED;
+  --mode-accent-active: #6D28D9;
+  --mode-accent-light: #DDD6FE;
+  --mode-accent-glow: #8B5CF6;
+  --mode-hairline: var(--hairline);
+  --mode-complete-bg: var(--surface-soft);
+  --mode-complete-text: var(--muted-soft);
+}
+
+/* === Background transition === */
+.mode-container {
+  transition: background-color 350ms ease-in-out;
+}
+
+/* === Delete animation === */
+.todo-item-exit {
+  animation: slideOutRight 200ms ease-in forwards;
+}
+
+/* === Hide native date input icons === */
+.date-input::-webkit-calendar-picker-indicator,
+.date-input::-webkit-inner-spin-button,
+.date-input::-webkit-clear-button {
+  display: none !important;
+  -webkit-appearance: none !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.date-input::-webkit-date-and-time-value {
+  text-align: left;
+}
+.date-input {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* === Reduced motion === */
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-in,
+  .animate-check-pop,
+  .animate-fade-in {
+    animation: none !important;
+  }
+  .mode-container {
+    transition: none !important;
+  }
+  .todo-item-exit {
+    animation: none !important;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', 'Noto Sans KR', -apple-system, BlinkMacSystemFont,
+               'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  color: var(--ink);
+  background-color: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
