@@ -1,23 +1,34 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { JapanTripData, TodoItem, TripPhase } from "@/lib/types";
-import { loadTripData, saveTripData, archiveTrip, resetTripData } from "@/lib/storage";
+import {
+  fetchTripData,
+  saveTripDataToServer,
+  archiveTripToServer,
+  createInitialData,
+} from "@/lib/storage";
 
 export function useTodos() {
   const [data, setData] = useState<JapanTripData | null>(null);
   const [phase, setPhase] = useState<TripPhase>("before");
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Hydrate from LocalStorage after mount
+  // Load from server on mount
   useEffect(() => {
-    setData(loadTripData());
+    fetchTripData().then(setData);
   }, []);
 
-  // Persist to LocalStorage on every change
+  // Debounced save to server on data change
   useEffect(() => {
-    if (data) {
-      saveTripData(data);
-    }
+    if (!data) return;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      saveTripDataToServer(data);
+    }, 500);
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    };
   }, [data]);
 
   const currentTodos = data?.todos[phase] ?? [];
@@ -99,11 +110,12 @@ export function useTodos() {
     [data]
   );
 
-  const endTrip = useCallback(() => {
+  const endTrip = useCallback(async () => {
     if (!data) return;
-    archiveTrip(data);
-    const fresh = resetTripData();
+    await archiveTripToServer(data);
+    const fresh = createInitialData();
     setData(fresh);
+    await saveTripDataToServer(fresh);
     setPhase("before");
   }, [data]);
 

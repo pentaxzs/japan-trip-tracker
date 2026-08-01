@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, MapPin, Calendar, Check, Trash2 } from "lucide-react";
 import { ArchivedTrip } from "@/lib/types";
-import { loadArchive, deleteArchivedTrip } from "@/lib/storage";
+import { fetchArchive, deleteArchivedTripFromServer } from "@/lib/storage";
 import { JAPAN_CITIES } from "@/components/TripInfoBar";
 
 interface ArchivePageProps {
@@ -29,11 +29,11 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
-    setArchives(loadArchive());
+    fetchArchive().then(setArchives);
   }, []);
 
-  const handleDelete = (id: string) => {
-    deleteArchivedTrip(id);
+  const handleDelete = async (id: string) => {
+    await deleteArchivedTripFromServer(id);
     setArchives((prev) => prev.filter((t) => t.id !== id));
     setDeleteConfirmId(null);
   };

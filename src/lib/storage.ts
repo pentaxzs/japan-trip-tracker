@@ -1,10 +1,7 @@
 import { JapanTripData, ArchivedTrip } from "./types";
 import { createDefaultTodos } from "./templates";
 
-const STORAGE_KEY = "japan-trip-tracker";
-const ARCHIVE_KEY = "japan-trip-archive";
-
-function createInitialData(): JapanTripData {
+export function createInitialData(): JapanTripData {
   const now = new Date().toISOString();
   return {
     version: "1.0",
@@ -20,84 +17,67 @@ function createInitialData(): JapanTripData {
   };
 }
 
-export function loadTripData(): JapanTripData {
-  if (typeof window === "undefined") {
-    return createInitialData();
-  }
+// --- API-based storage (Redis via API Route) ---
 
+export async function fetchTripData(): Promise<JapanTripData> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      const initial = createInitialData();
-      saveTripData(initial);
-      return initial;
-    }
-    return JSON.parse(raw) as JapanTripData;
+    const res = await fetch("/api/todos");
+    const data = await res.json();
+    if (data) return data as JapanTripData;
   } catch {
-    const initial = createInitialData();
-    saveTripData(initial);
-    return initial;
+    // API unavailable
+  }
+  return createInitialData();
+}
+
+export async function saveTripDataToServer(data: JapanTripData): Promise<void> {
+  const updated = { ...data, updatedAt: new Date().toISOString() };
+  try {
+    await fetch("/api/todos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "save", data: updated }),
+    });
+  } catch {
+    // Silently fail
   }
 }
 
-export function saveTripData(data: JapanTripData): void {
-  if (typeof window === "undefined") return;
-
-  const updated: JapanTripData = {
-    ...data,
-    updatedAt: new Date().toISOString(),
-  };
-
+export async function fetchArchive(): Promise<ArchivedTrip[]> {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  } catch {
-    // LocalStorage full or unavailable
-  }
-}
-
-export function loadArchive(): ArchivedTrip[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(ARCHIVE_KEY);
-    return raw ? (JSON.parse(raw) as ArchivedTrip[]) : [];
+    const res = await fetch("/api/todos?type=archive");
+    return (await res.json()) as ArchivedTrip[];
   } catch {
     return [];
   }
 }
 
-export function archiveTrip(data: JapanTripData): void {
-  if (typeof window === "undefined") return;
-
+export async function archiveTripToServer(data: JapanTripData): Promise<void> {
   const archived: ArchivedTrip = {
     id: crypto.randomUUID(),
     tripInfo: data.tripInfo,
     todos: data.todos,
     archivedAt: new Date().toISOString(),
   };
-
-  const existing = loadArchive();
-  existing.unshift(archived);
-
   try {
-    localStorage.setItem(ARCHIVE_KEY, JSON.stringify(existing));
+    await fetch("/api/todos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "archive", trip: archived }),
+    });
   } catch {
-    // LocalStorage full
+    // Silently fail
   }
 }
 
-export function deleteArchivedTrip(id: string): void {
-  if (typeof window === "undefined") return;
-  const existing = loadArchive();
-  const filtered = existing.filter((t) => t.id !== id);
+export async function deleteArchivedTripFromServer(id: string): Promise<void> {
   try {
-    localStorage.setItem(ARCHIVE_KEY, JSON.stringify(filtered));
+    await fetch("/api/todos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "delete-archive", id }),
+    });
   } catch {
-    // LocalStorage full
+    // Silently fail
   }
-}
-
-export function resetTripData(): JapanTripData {
-  const initial = createInitialData();
-  saveTripData(initial);
-  return initial;
 }
