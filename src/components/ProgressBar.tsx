@@ -14,26 +14,28 @@ export default function ProgressBar({
   if (totalCount === 0) return null;
 
   return (
-    <div className="px-[16px] py-[8px]">
-      <div className="flex items-center justify-between mb-[6px]">
+    <div className="px-[16px] py-[10px]">
+      <div className="flex items-center justify-between mb-[8px]">
         <span
           className="text-caption"
-          style={{ color: "var(--muted)" }}
+          style={{ color: "var(--ink)", fontWeight: 700 }}
         >
-          진행률
+          진행률 {progress}%
         </span>
         <span
           className="text-caption"
-          style={{ color: "var(--muted)" }}
+          style={{ color: "var(--ink)", fontWeight: 600 }}
         >
           {completedCount}/{totalCount} 완료
         </span>
       </div>
       <div
-        className="w-full h-1.5 overflow-hidden"
+        className="w-full overflow-hidden"
         style={{
-          backgroundColor: "var(--surface-strong)",
-          borderRadius: "9999px",
+          height: "12px",
+          backgroundColor: "var(--canvas)",
+          border: "2px solid var(--ink)",
+          borderRadius: "0px",
         }}
       >
         <div
@@ -41,7 +43,6 @@ export default function ProgressBar({
           style={{
             width: `${progress}%`,
             backgroundColor: "var(--mode-accent)",
-            borderRadius: "9999px",
           }}
         />
       </div>

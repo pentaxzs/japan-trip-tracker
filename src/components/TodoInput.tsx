@@ -43,10 +43,10 @@ export default function TodoInput({ onAdd }: TodoInputProps) {
           height: "56px",
           padding: "14px 12px",
           backgroundColor: "var(--canvas)",
-          borderRadius: "8px",
-          borderWidth: "1px",
+          borderRadius: "0px",
+          borderWidth: "3px",
           borderStyle: "solid",
-          borderColor: "var(--hairline)",
+          borderColor: "var(--ink)",
           fontSize: "16px",
           fontWeight: 400,
           lineHeight: 1.5,
@@ -54,12 +54,12 @@ export default function TodoInput({ onAdd }: TodoInputProps) {
         }}
         onFocus={(e) => {
           e.currentTarget.style.borderColor = "var(--mode-accent)";
-          e.currentTarget.style.borderWidth = "2px";
-          e.currentTarget.style.padding = "13px 11px";
+          e.currentTarget.style.borderWidth = "3px";
+          e.currentTarget.style.padding = "14px 12px";
         }}
         onBlur={(e) => {
-          e.currentTarget.style.borderColor = "var(--hairline)";
-          e.currentTarget.style.borderWidth = "1px";
+          e.currentTarget.style.borderColor = "var(--ink)";
+          e.currentTarget.style.borderWidth = "3px";
           e.currentTarget.style.padding = "14px 12px";
         }}
       />
@@ -80,8 +80,9 @@ export default function TodoInput({ onAdd }: TodoInputProps) {
           height: "48px",
           minWidth: "48px",
           padding: "14px 24px",
-          borderRadius: "8px",
+          borderRadius: "0px",
           backgroundColor: "var(--mode-accent)",
+          border: "3px solid var(--ink)",
           color: "var(--on-primary)",
           fontSize: "16px",
           fontWeight: 500,

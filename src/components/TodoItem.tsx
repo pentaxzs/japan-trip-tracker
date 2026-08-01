@@ -52,8 +52,8 @@ export default function TodoItemComponent({
         borderRadius: "0px",
         backgroundColor: item.completed
           ? "var(--mode-complete-bg)"
-          : "transparent",
-        borderBottom: "1px solid var(--hairline)",
+          : "var(--canvas)",
+        borderBottom: "2px solid var(--ink)",
       }}
     >
       {/* Checkbox — 24x24, rounded-sm (8px) per Airbnb spec */}
@@ -70,15 +70,13 @@ export default function TodoItemComponent({
           ${justChecked ? "animate-check-pop" : ""}
         `}
         style={{
-          borderRadius: "4px",
+          borderRadius: "0px",
           backgroundColor: item.completed
             ? "var(--mode-accent)"
-            : "transparent",
-          borderWidth: "1.5px",
+            : "var(--canvas)",
+          borderWidth: "2px",
           borderStyle: "solid",
-          borderColor: item.completed
-            ? "var(--mode-accent)"
-            : "var(--border-strong)",
+          borderColor: "var(--ink)",
         }}
       >
         {item.completed && (

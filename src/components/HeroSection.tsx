@@ -63,8 +63,14 @@ export default function HeroSection({ phase, departureDate, returnDate }: HeroSe
       </p>
       {ddayMessage && (
         <p
-          className="text-title-md mt-[8px]"
-          style={{ color: "var(--mode-accent)", fontWeight: 700 }}
+          className="text-title-md mt-[10px] inline-block px-[14px] py-[4px]"
+          style={{
+            color: "#ffffff",
+            fontWeight: 800,
+            backgroundColor: "#FF3366",
+            border: "2px solid var(--ink)",
+            fontSize: "16px",
+          }}
         >
           {ddayMessage}
         </p>

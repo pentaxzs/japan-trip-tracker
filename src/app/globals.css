@@ -185,66 +185,78 @@
  * ================================================================ */
 
 :root {
-  /* Airbnb core — shared across all modes */
+  /* Memphis palette */
   --canvas: #ffffff;
-  --surface-soft: #f7f7f7;
-  --surface-strong: #f2f2f2;
-  --hairline: #dddddd;
-  --hairline-soft: #ebebeb;
-  --border-strong: #c1c1c1;
+  --surface-soft: #f0f9f6;
+  --surface-strong: #e0f2ec;
+  --hairline: #222222;
+  --hairline-soft: #444444;
+  --border-strong: #222222;
   --ink: #222222;
-  --body-text: #3f3f3f;
-  --muted: #6a6a6a;
-  --muted-soft: #929292;
-  --error: #c13515;
+  --body-text: #222222;
+  --muted: #555555;
+  --muted-soft: #777777;
+  --error: #ff3366;
   --on-primary: #ffffff;
+  --memphis-bg: #5CE0D2;
+  --memphis-pink: #FF6B9D;
+  --memphis-yellow: #FFD93D;
+  --memphis-orange: #FF8C42;
+  --memphis-blue: #6C63FF;
+  --memphis-border: 3px solid #222222;
 }
 
-/* === Before Mode — accent: Rausch #ff385c === */
+/* === Before Mode — 설레임 (Mint/Turquoise) === */
 [data-mode="before"] {
-  --mode-bg: var(--canvas);
-  --mode-bg-soft: var(--surface-soft);
-  --mode-hero-gradient: linear-gradient(180deg, var(--surface-soft) 0%, var(--surface-strong) 100%);
-  --mode-accent: #ff385c;
-  --mode-accent-active: #e00b41;
-  --mode-accent-light: #ffd1da;
-  --mode-accent-glow: #ff6b6b;
-  --mode-hairline: var(--hairline);
-  --mode-complete-bg: var(--surface-soft);
-  --mode-complete-text: var(--muted-soft);
+  --mode-bg: #E0FFF6;
+  --mode-bg-soft: #F0FFFA;
+  --mode-hero-gradient: none;
+  --mode-accent: #00BFA5;
+  --mode-accent-active: #009688;
+  --mode-accent-light: #B2DFDB;
+  --mode-accent-glow: #26D9C0;
+  --mode-hairline: #222222;
+  --mode-complete-bg: #F0FFFA;
+  --mode-complete-text: #999999;
 }
 
-/* === During Mode — accent: Amber #F59E0B === */
+/* === During Mode — 재미 (Yellow/Mint) === */
 [data-mode="during"] {
-  --mode-bg: var(--canvas);
-  --mode-bg-soft: var(--surface-soft);
-  --mode-hero-gradient: linear-gradient(180deg, var(--surface-soft) 0%, var(--surface-strong) 100%);
-  --mode-accent: #F59E0B;
-  --mode-accent-active: #D97706;
-  --mode-accent-light: #FDE68A;
-  --mode-accent-glow: #FBBF24;
-  --mode-hairline: var(--hairline);
-  --mode-complete-bg: var(--surface-soft);
-  --mode-complete-text: var(--muted-soft);
+  --mode-bg: #E8FFF5;
+  --mode-bg-soft: #F0FFF8;
+  --mode-hero-gradient: none;
+  --mode-accent: #FF8C42;
+  --mode-accent-active: #E07030;
+  --mode-accent-light: #FFD4B0;
+  --mode-accent-glow: #FFA060;
+  --mode-hairline: #222222;
+  --mode-complete-bg: #F0FFF8;
+  --mode-complete-text: #999999;
 }
 
-/* === After Mode — accent: Violet #7C3AED === */
+/* === After Mode — 차분함 (Lavender) === */
 [data-mode="after"] {
-  --mode-bg: var(--canvas);
-  --mode-bg-soft: var(--surface-soft);
-  --mode-hero-gradient: linear-gradient(180deg, var(--surface-soft) 0%, var(--surface-strong) 100%);
-  --mode-accent: #7C3AED;
-  --mode-accent-active: #6D28D9;
-  --mode-accent-light: #DDD6FE;
-  --mode-accent-glow: #8B5CF6;
-  --mode-hairline: var(--hairline);
-  --mode-complete-bg: var(--surface-soft);
-  --mode-complete-text: var(--muted-soft);
+  --mode-bg: #F0EEFF;
+  --mode-bg-soft: #F5F3FF;
+  --mode-hero-gradient: none;
+  --mode-accent: #6C63FF;
+  --mode-accent-active: #5550DD;
+  --mode-accent-light: #D5D2FF;
+  --mode-accent-glow: #8B85FF;
+  --mode-hairline: #222222;
+  --mode-complete-bg: #F5F3FF;
+  --mode-complete-text: #999999;
 }
 
-/* === Background transition === */
+/* === Memphis pattern background === */
 .mode-container {
   transition: background-color 350ms ease-in-out;
+  background-image:
+    radial-gradient(circle, #FFD93D 2px, transparent 2px),
+    radial-gradient(circle, #FF6B9D 1.5px, transparent 1.5px),
+    radial-gradient(circle, #6C63FF 1px, transparent 1px);
+  background-size: 60px 60px, 40px 40px, 80px 80px;
+  background-position: 0 0, 20px 30px, 50px 10px;
 }
 
 /* === Delete animation === */

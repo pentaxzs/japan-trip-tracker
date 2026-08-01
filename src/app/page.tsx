@@ -53,7 +53,7 @@ export default function Home() {
       className="mode-container min-h-dvh flex flex-col"
       style={{ backgroundColor: "var(--mode-bg)" }}
     >
-      <div className="w-full max-w-[480px] mx-auto flex flex-col min-h-dvh">
+      <div className="w-full max-w-[520px] md:max-w-[640px] mx-auto flex flex-col min-h-dvh px-0 md:my-[24px] md:min-h-0 md:border-x-[3px] md:border-b-[3px] md:border-[var(--ink)]" style={{ backgroundColor: "var(--canvas)" }}>
         {/* Header — with archive button */}
         <div className="relative">
           <Header />

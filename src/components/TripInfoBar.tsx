@@ -106,8 +106,8 @@ export default function TripInfoBar({
     <div
       className="px-[16px] py-[12px] flex flex-col gap-[10px]"
       style={{
-        backgroundColor: "var(--surface-soft)",
-        borderBottom: "1px solid var(--hairline)",
+        backgroundColor: "var(--canvas)",
+        borderBottom: "3px solid var(--ink)",
       }}
     >
       {/* Row 1: Destination + Weather */}

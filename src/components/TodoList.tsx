@@ -19,15 +19,21 @@ export default function TodoList({
   onDelete,
 }: TodoListProps) {
   const [newItemId, setNewItemId] = useState<string | null>(null);
-  const prevLengthRef = useRef(todos.length);
+  const prevIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    if (todos.length > prevLengthRef.current && todos.length > 0) {
-      setNewItemId(todos[0].id);
-      const timer = setTimeout(() => setNewItemId(null), 500);
-      return () => clearTimeout(timer);
+    const currentIds = new Set(todos.map((t) => t.id));
+    // Only animate if exactly one new item was added (not tab switch)
+    if (prevIdsRef.current.size > 0 && currentIds.size === prevIdsRef.current.size + 1) {
+      const newId = todos.find((t) => !prevIdsRef.current.has(t.id))?.id;
+      if (newId) {
+        setNewItemId(newId);
+        const timer = setTimeout(() => setNewItemId(null), 500);
+        prevIdsRef.current = currentIds;
+        return () => clearTimeout(timer);
+      }
     }
-    prevLengthRef.current = todos.length;
+    prevIdsRef.current = currentIds;
   }, [todos]);
 
   if (todos.length === 0) {
