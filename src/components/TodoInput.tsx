@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, KeyboardEvent } from "react";
-import { Plus } from "lucide-react";
 
 interface TodoInputProps {
   onAdd: (text: string) => void;
@@ -25,7 +24,7 @@ export default function TodoInput({ onAdd }: TodoInputProps) {
   };
 
   return (
-    <div className="flex items-center gap-[8px] px-[16px] py-[12px]">
+    <div className="flex items-center gap-[8px] px-[16px] pt-[12px] pb-[max(16px,env(safe-area-inset-bottom,16px))]">
       {/* text-input: white surface, 1px hairline, 8px radius, 56px height */}
       <input
         type="text"
@@ -63,13 +62,13 @@ export default function TodoInput({ onAdd }: TodoInputProps) {
           e.currentTarget.style.padding = "14px 12px";
         }}
       />
-      {/* button-primary: Rausch fill, white text, 8px radius, 48px height */}
+      {/* button-primary: Rausch fill, white text, 8px radius, 56px height (matches input) */}
       <button
         onClick={handleSubmit}
         disabled={!text.trim()}
         aria-label="할 일 추가"
         className="
-          flex items-center justify-center gap-[8px]
+          flex items-center justify-center
           transition-all duration-150
           hover:brightness-95
           active:scale-[0.98]
@@ -77,8 +76,8 @@ export default function TodoInput({ onAdd }: TodoInputProps) {
           disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100
         "
         style={{
-          height: "48px",
-          minWidth: "48px",
+          height: "56px",
+          minWidth: "56px",
           padding: "14px 24px",
           borderRadius: "0px",
           backgroundColor: "var(--mode-accent)",
@@ -89,7 +88,6 @@ export default function TodoInput({ onAdd }: TodoInputProps) {
           lineHeight: 1.25,
         }}
       >
-        <Plus size={20} strokeWidth={2} />
         추가
       </button>
     </div>
