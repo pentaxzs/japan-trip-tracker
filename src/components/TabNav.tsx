@@ -31,7 +31,7 @@ export default function TabNav({ currentTab, onTabChange }: TabNavProps) {
             className="flex-1 h-12 relative text-nav-link transition-colors duration-200
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
             style={{
-              color: isActive ? "var(--ink)" : "var(--muted)",
+              color: isActive ? "var(--mode-on-accent)" : "var(--muted)",
               fontWeight: isActive ? 800 : 500,
               backgroundColor: isActive ? "var(--mode-accent)" : "transparent",
               textTransform: "uppercase",
@@ -44,7 +44,7 @@ export default function TabNav({ currentTab, onTabChange }: TabNavProps) {
             {isActive && (
               <span
                 className="absolute bottom-0 left-0 right-0"
-                style={{ height: "3px", backgroundColor: "var(--ink)" }}
+                style={{ height: "3px", backgroundColor: "var(--mode-on-accent)" }}
               />
             )}
           </button>

@@ -215,6 +215,8 @@
   --mode-accent-active: #009688;
   --mode-accent-light: #B2DFDB;
   --mode-accent-glow: #26D9C0;
+  /* accent 배경 위에 올라가는 글자색 */
+  --mode-on-accent: #222222;
   --mode-hairline: #222222;
   --mode-complete-bg: #F0FFFA;
   --mode-complete-text: #999999;
@@ -229,6 +231,8 @@
   --mode-accent-active: #E07030;
   --mode-accent-light: #FFD4B0;
   --mode-accent-glow: #FFA060;
+  /* accent 배경 위에 올라가는 글자색 */
+  --mode-on-accent: #222222;
   --mode-hairline: #222222;
   --mode-complete-bg: #F0FFF8;
   --mode-complete-text: #999999;
@@ -243,6 +247,8 @@
   --mode-accent-active: #5550DD;
   --mode-accent-light: #D5D2FF;
   --mode-accent-glow: #8B85FF;
+  /* accent 배경 위에 올라가는 글자색 */
+  --mode-on-accent: #222222;
   --mode-hairline: #222222;
   --mode-complete-bg: #F5F3FF;
   --mode-complete-text: #999999;
@@ -257,6 +263,8 @@
   --mode-accent-active: #162C70;
   --mode-accent-light: #BFCCEF;
   --mode-accent-glow: #3B5BC4;
+  /* accent 배경 위에 올라가는 글자색 */
+  --mode-on-accent: #FFFFFF;
   --mode-hairline: #222222;
   --mode-complete-bg: #FFF9EE;
   --mode-complete-text: #999999;
