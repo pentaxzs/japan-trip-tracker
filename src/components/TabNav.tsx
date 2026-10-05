@@ -1,36 +1,33 @@
 "use client";
 
-import { TripPhase } from "@/lib/types";
-import { PHASE_THEMES } from "@/constants/themes";
-
-const PHASES: TripPhase[] = ["before", "during", "after"];
+import { TabKey, TAB_KEYS, TAB_THEMES } from "@/constants/themes";
 
 interface TabNavProps {
-  currentPhase: TripPhase;
-  onPhaseChange: (phase: TripPhase) => void;
+  currentTab: TabKey;
+  onTabChange: (tab: TabKey) => void;
 }
 
-export default function TabNav({ currentPhase, onPhaseChange }: TabNavProps) {
+export default function TabNav({ currentTab, onTabChange }: TabNavProps) {
   return (
     <div
       role="tablist"
-      aria-label="여행 단계 선택"
+      aria-label="여행 단계 및 미션 선택"
       className="flex sticky top-0 z-50"
       style={{
         backgroundColor: "var(--canvas)",
         borderBottom: "3px solid var(--ink)",
       }}
     >
-      {PHASES.map((phase) => {
-        const isActive = phase === currentPhase;
-        const theme = PHASE_THEMES[phase];
+      {TAB_KEYS.map((tabKey) => {
+        const isActive = tabKey === currentTab;
+        const theme = TAB_THEMES[tabKey];
 
         return (
           <button
-            key={phase}
+            key={tabKey}
             role="tab"
             aria-selected={isActive}
-            onClick={() => onPhaseChange(phase)}
+            onClick={() => onTabChange(tabKey)}
             className="flex-1 h-12 relative text-nav-link transition-colors duration-200
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
             style={{
@@ -38,8 +35,9 @@ export default function TabNav({ currentPhase, onPhaseChange }: TabNavProps) {
               fontWeight: isActive ? 800 : 500,
               backgroundColor: isActive ? "var(--mode-accent)" : "transparent",
               textTransform: "uppercase",
-              fontSize: "18px",
-              letterSpacing: "0.5px",
+              fontSize: "16px",
+              letterSpacing: "0.2px",
+              whiteSpace: "nowrap",
             }}
           >
             {theme.tabLabel}

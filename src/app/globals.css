@@ -248,6 +248,20 @@
   --mode-complete-text: #999999;
 }
 
+/* === Mission Mode — 아빠와 아들 (Cream / Navy) === */
+[data-mode="mission"] {
+  --mode-bg: #FFF3DC;
+  --mode-bg-soft: #FFF9EE;
+  --mode-hero-gradient: none;
+  --mode-accent: #1F3A93;
+  --mode-accent-active: #162C70;
+  --mode-accent-light: #BFCCEF;
+  --mode-accent-glow: #3B5BC4;
+  --mode-hairline: #222222;
+  --mode-complete-bg: #FFF9EE;
+  --mode-complete-text: #999999;
+}
+
 /* === Memphis pattern background === */
 .mode-container {
   transition: background-color 350ms ease-in-out;
@@ -310,4 +324,13 @@ body {
   background-color: var(--canvas);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translate(-50%, -100%); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out;
 }

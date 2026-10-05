@@ -1,5 +1,5 @@
 import { JapanTripData, ArchivedTrip } from "./types";
-import { createDefaultTodos } from "./templates";
+import { createDefaultTodos, createDefaultMissions } from "./templates";
 
 export function createInitialData(): JapanTripData {
   const now = new Date().toISOString();
@@ -14,7 +14,17 @@ export function createInitialData(): JapanTripData {
       returnDate: null,
     },
     todos: createDefaultTodos(),
+    missions: createDefaultMissions(),
   };
+}
+
+/**
+ * v1.0 데이터에는 missions가 없다. 읽어 들일 때 기본 미션을 채워 넣는다.
+ * 기존 투두는 그대로 보존된다.
+ */
+function withMissions(data: JapanTripData): JapanTripData {
+  if (Array.isArray(data.missions)) return data;
+  return { ...data, missions: createDefaultMissions() };
 }
 
 // --- API-based storage (Redis via API Route) ---
@@ -23,7 +33,7 @@ export async function fetchTripData(): Promise<JapanTripData> {
   try {
     const res = await fetch("/api/todos");
     const data = await res.json();
-    if (data) return data as JapanTripData;
+    if (data) return withMissions(data as JapanTripData);
   } catch {
     // API unavailable
   }
@@ -31,12 +41,11 @@ export async function fetchTripData(): Promise<JapanTripData> {
 }
 
 export async function saveTripDataToServer(data: JapanTripData): Promise<void> {
-  const updated = { ...data, updatedAt: new Date().toISOString() };
   try {
     await fetch("/api/todos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "save", data: updated }),
+      body: JSON.stringify({ action: "save", data }),
     });
   } catch {
     // Silently fail
@@ -57,6 +66,7 @@ export async function archiveTripToServer(data: JapanTripData): Promise<void> {
     id: crypto.randomUUID(),
     tripInfo: data.tripInfo,
     todos: data.todos,
+    missions: data.missions,
     archivedAt: new Date().toISOString(),
   };
   try {

@@ -4,9 +4,15 @@ import { useState, KeyboardEvent } from "react";
 
 interface TodoInputProps {
   onAdd: (text: string) => void;
+  placeholder?: string;
+  addLabel?: string;
 }
 
-export default function TodoInput({ onAdd }: TodoInputProps) {
+export default function TodoInput({
+  onAdd,
+  placeholder = "+ 새 할 일을 입력하세요...",
+  addLabel = "할 일 추가",
+}: TodoInputProps) {
   const [text, setText] = useState("");
 
   const handleSubmit = () => {
@@ -31,7 +37,7 @@ export default function TodoInput({ onAdd }: TodoInputProps) {
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="+ 새 할 일을 입력하세요..."
+        placeholder={placeholder}
         maxLength={200}
         className="
           flex-1 outline-none
@@ -66,7 +72,7 @@ export default function TodoInput({ onAdd }: TodoInputProps) {
       <button
         onClick={handleSubmit}
         disabled={!text.trim()}
-        aria-label="할 일 추가"
+        aria-label={addLabel}
         className="
           flex items-center justify-center
           transition-all duration-150

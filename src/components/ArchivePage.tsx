@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowLeft, MapPin, Calendar, Check, Trash2 } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Check, Trash2, MessageSquareQuote } from "lucide-react";
 import { ArchivedTrip } from "@/lib/types";
 import { fetchArchive, deleteArchivedTripFromServer } from "@/lib/storage";
 import { JAPAN_CITIES } from "@/components/TripInfoBar";
@@ -27,6 +27,7 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
   const [archives, setArchives] = useState<ArchivedTrip[]>([]);
 
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [openNotesId, setOpenNotesId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchArchive().then(setArchives);
@@ -103,6 +104,12 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
               const totalAll = totalBefore + totalDuring + totalAfter;
               const doneAll = doneBefore + doneDuring + doneAfter;
 
+              // v1.0 아카이브에는 missions가 없다
+              const notedMissions = (trip.missions ?? []).filter(
+                (m) => m.note.trim().length > 0
+              );
+              const notesOpen = openNotesId === trip.id;
+
               const hasDates = trip.tripInfo.departureDate && trip.tripInfo.returnDate;
               const duration = hasDates
                 ? calcDuration(trip.tripInfo.departureDate!, trip.tripInfo.returnDate!)
@@ -175,6 +182,52 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                       </div>
                     ))}
                   </div>
+
+                  {/* 아빠와 나눈 이야기 — 미션 메모 */}
+                  {notedMissions.length > 0 && (
+                    <div className="flex flex-col gap-[8px]">
+                      <button
+                        onClick={() => setOpenNotesId(notesOpen ? null : trip.id)}
+                        aria-expanded={notesOpen}
+                        className="flex items-center gap-[6px] text-body-sm"
+                        style={{ color: "var(--mode-accent)", fontWeight: 600 }}
+                      >
+                        <MessageSquareQuote size={14} />
+                        아빠와 나눈 이야기 {notedMissions.length}개
+                        <span style={{ color: "var(--muted)" }}>
+                          {notesOpen ? "닫기" : "펼치기"}
+                        </span>
+                      </button>
+
+                      {notesOpen && (
+                        <ul className="flex flex-col gap-[8px]">
+                          {notedMissions.map((m) => (
+                            <li
+                              key={m.id}
+                              className="px-[12px] py-[10px] flex flex-col gap-[4px]"
+                              style={{
+                                borderRadius: "8px",
+                                backgroundColor: "var(--surface-soft)",
+                              }}
+                            >
+                              <span
+                                className="text-caption"
+                                style={{ color: "var(--muted)", fontWeight: 700 }}
+                              >
+                                {m.emoji} {m.moment}
+                              </span>
+                              <p
+                                className="text-body-sm"
+                                style={{ color: "var(--ink)", whiteSpace: "pre-wrap" }}
+                              >
+                                {m.note}
+                              </p>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
 
                   {/* Completion + Delete */}
                   <div className="flex items-center justify-between">

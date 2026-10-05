@@ -8,14 +8,17 @@ import TabNav from "@/components/TabNav";
 import HeroSection from "@/components/HeroSection";
 import ProgressBar from "@/components/ProgressBar";
 import TodoList from "@/components/TodoList";
+import MissionList from "@/components/MissionList";
 import TodoInput from "@/components/TodoInput";
 import TripInfoBar from "@/components/TripInfoBar";
 import ArchivePage from "@/components/ArchivePage";
+import UpdateToast, { MergeToast } from "@/components/UpdateToast";
 
 export default function Home() {
   const {
+    tab,
+    setTab,
     phase,
-    setPhase,
     todos,
     addTodo,
     toggleTodo,
@@ -27,7 +30,20 @@ export default function Home() {
     tripInfo,
     updateTripInfo,
     endTrip,
+    hasUpdate,
+    refreshData,
+    wasMerged,
+    missions,
+    addMission,
+    toggleMission,
+    updateMissionNote,
+    deleteMission,
+    missionCompletedCount,
+    missionTotalCount,
+    missionProgress,
   } = useTodos();
+
+  const isMission = tab === "mission";
 
   const [showArchive, setShowArchive] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
@@ -49,10 +65,12 @@ export default function Home() {
 
   return (
     <div
-      data-mode={phase}
+      data-mode={tab}
       className="mode-container min-h-dvh flex flex-col"
       style={{ backgroundColor: "var(--mode-bg)" }}
     >
+      <UpdateToast visible={hasUpdate} onRefresh={refreshData} />
+      <MergeToast visible={wasMerged} />
       <div className="w-full max-w-[520px] md:max-w-[640px] mx-auto flex flex-col min-h-dvh px-0 md:my-[24px] md:min-h-0 md:border-x-[3px] md:border-b-[3px] md:border-[var(--ink)]" style={{ backgroundColor: "var(--canvas)" }}>
         {/* Header — with archive button */}
         <div className="relative">
@@ -84,7 +102,7 @@ export default function Home() {
         />
 
         {/* Tab Navigation — 48px fixed, Airbnb nav-link style */}
-        <TabNav currentPhase={phase} onPhaseChange={setPhase} />
+        <TabNav currentTab={tab} onTabChange={setTab} />
 
         {/* Hero Section — gradient background */}
         <div
@@ -92,7 +110,7 @@ export default function Home() {
           style={{ backgroundImage: "var(--mode-hero-gradient)" }}
         >
           <HeroSection
-            phase={phase}
+            tab={tab}
             departureDate={tripInfo.departureDate}
             returnDate={tripInfo.returnDate}
           />
@@ -101,22 +119,31 @@ export default function Home() {
         {/* Progress Bar */}
         <div className="py-[8px]">
           <ProgressBar
-            completedCount={completedCount}
-            totalCount={totalCount}
-            progress={progress}
+            completedCount={isMission ? missionCompletedCount : completedCount}
+            totalCount={isMission ? missionTotalCount : totalCount}
+            progress={isMission ? missionProgress : progress}
           />
         </div>
 
-        {/* Todo List — scrollable area */}
-        <TodoList
-          todos={todos}
-          phase={phase}
-          onToggle={toggleTodo}
-          onDelete={deleteTodo}
-        />
+        {/* List — scrollable area */}
+        {isMission ? (
+          <MissionList
+            missions={missions}
+            onToggle={toggleMission}
+            onNoteChange={updateMissionNote}
+            onDelete={deleteMission}
+          />
+        ) : (
+          <TodoList
+            todos={todos}
+            phase={phase}
+            onToggle={toggleTodo}
+            onDelete={deleteTodo}
+          />
+        )}
 
         {/* End Trip Button — only on "after" tab */}
-        {phase === "after" && (
+        {tab === "after" && (
           <div className="px-[16px] py-[12px]">
             {showEndConfirm ? (
               <div
@@ -183,7 +210,16 @@ export default function Home() {
             borderColor: "var(--hairline)",
           }}
         >
-          <TodoInput onAdd={addTodo} />
+          {isMission ? (
+            <TodoInput
+              key="mission-input"
+              onAdd={addMission}
+              placeholder="+ 나만의 순간을 추가하세요..."
+              addLabel="미션 추가"
+            />
+          ) : (
+            <TodoInput key="todo-input" onAdd={addTodo} />
+          )}
         </div>
       </div>
     </div>

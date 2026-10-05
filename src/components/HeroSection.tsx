@@ -1,16 +1,15 @@
 "use client";
 
-import { TripPhase } from "@/lib/types";
-import { PHASE_THEMES } from "@/constants/themes";
+import { TabKey, TAB_THEMES } from "@/constants/themes";
 
 interface HeroSectionProps {
-  phase: TripPhase;
+  tab: TabKey;
   departureDate: string | null;
   returnDate: string | null;
 }
 
 function getDdayMessage(
-  phase: TripPhase,
+  phase: TabKey,
   departureDate: string | null,
   returnDate: string | null
 ): string | null {
@@ -46,9 +45,9 @@ function getDdayMessage(
   return null;
 }
 
-export default function HeroSection({ phase, departureDate, returnDate }: HeroSectionProps) {
-  const theme = PHASE_THEMES[phase];
-  const ddayMessage = getDdayMessage(phase, departureDate, returnDate);
+export default function HeroSection({ tab, departureDate, returnDate }: HeroSectionProps) {
+  const theme = TAB_THEMES[tab];
+  const ddayMessage = getDdayMessage(tab, departureDate, returnDate);
 
   return (
     <div className="px-[16px] py-[24px] text-center">
