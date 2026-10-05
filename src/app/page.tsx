@@ -214,7 +214,7 @@ export default function Home() {
             <TodoInput
               key="mission-input"
               onAdd={addMission}
-              placeholder="+ 나만의 순간을 추가하세요..."
+              placeholder="+ 우리만의 순간을 추가하세요..."
               addLabel="미션 추가"
             />
           ) : (

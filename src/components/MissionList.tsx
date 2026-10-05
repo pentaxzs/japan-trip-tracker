@@ -7,7 +7,7 @@ import MissionCard from "./MissionCard";
 interface MissionListProps {
   missions: MissionItem[];
   onToggle: (id: string) => void;
-  onNoteChange: (id: string, note: string) => void;
+  onNoteChange: (id: string, field: "noteSon" | "noteDad", note: string) => void;
   onDelete: (id: string) => void;
 }
 
@@ -34,7 +34,7 @@ export default function MissionList({
             미션이 없어요
           </p>
           <p className="text-body-md" style={{ color: "var(--muted)" }}>
-            아래에서 나만의 순간을 추가해보세요
+            아래에서 우리만의 순간을 추가해보세요
           </p>
         </div>
       </div>
@@ -43,7 +43,7 @@ export default function MissionList({
 
   return (
     <div className="flex-1 overflow-y-auto px-[16px] pb-[16px]">
-      {/* 아빠가 기억하면 좋은 원칙 */}
+      {/* 둘 다 읽는 안내 — 한쪽에게 지시하지 않는다 */}
       <div
         className="mb-[14px] px-[14px] py-[12px]"
         style={{
@@ -53,11 +53,11 @@ export default function MissionList({
         }}
       >
         <p className="text-title-sm" style={{ fontWeight: 800, marginBottom: "4px" }}>
-          가르침 20% · 같이 경험하기 80%
+          다 안 해도 돼요
         </p>
         <p className="text-body-md" style={{ lineHeight: 1.55, opacity: 0.95 }}>
-          하루에 아빠 이야기 하나, 질문 하나, 아이 혼자 해보는 것 하나면 충분해요.
-          전부 다 할 필요 없어요.
+          하루에 한두 개만 꺼내 봐도 충분해요. 순서대로 할 필요도 없고,
+          빈칸은 비워둬도 괜찮아요.
         </p>
       </div>
 

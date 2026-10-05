@@ -61,7 +61,7 @@ export const MISSION_THEME: PhaseTheme = {
   accentLight: "#BFCCEF",
   accentGlow: "#3B5BC4",
   heroTitle: "아빠와 아들의 도쿄",
-  heroSubtitle: "장소마다 딱 하나의 이야기만 남겨요",
+  heroSubtitle: "둘이 같이 보고, 각자 한 줄씩 남겨요",
   heroEmoji: "🧭",
   tabLabel: "미션",
   animation: "fade-in",

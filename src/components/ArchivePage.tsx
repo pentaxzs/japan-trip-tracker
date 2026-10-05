@@ -106,7 +106,7 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
 
               // v1.0 아카이브에는 missions가 없다
               const notedMissions = (trip.missions ?? []).filter(
-                (m) => m.note.trim().length > 0
+                (m) => (m.noteSon ?? "").trim() || (m.noteDad ?? "").trim()
               );
               const notesOpen = openNotesId === trip.id;
 
@@ -193,7 +193,7 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                         style={{ color: "var(--mode-accent)", fontWeight: 600 }}
                       >
                         <MessageSquareQuote size={14} />
-                        아빠와 나눈 이야기 {notedMissions.length}개
+                        남겨둔 메모 {notedMissions.length}개
                         <span style={{ color: "var(--muted)" }}>
                           {notesOpen ? "닫기" : "펼치기"}
                         </span>
@@ -216,12 +216,23 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                               >
                                 {m.emoji} {m.moment}
                               </span>
-                              <p
-                                className="text-body-sm"
-                                style={{ color: "var(--ink)", whiteSpace: "pre-wrap" }}
-                              >
-                                {m.note}
-                              </p>
+                              {([
+                                ["아들", m.noteSon],
+                                ["아빠", m.noteDad],
+                              ] as const)
+                                .filter(([, note]) => (note ?? "").trim())
+                                .map(([who, note]) => (
+                                  <p
+                                    key={who}
+                                    className="text-body-sm"
+                                    style={{ color: "var(--ink)", whiteSpace: "pre-wrap" }}
+                                  >
+                                    <span style={{ color: "var(--muted)", fontWeight: 700 }}>
+                                      {who}{" "}
+                                    </span>
+                                    {note}
+                                  </p>
+                                ))}
                             </li>
                           ))}
                         </ul>

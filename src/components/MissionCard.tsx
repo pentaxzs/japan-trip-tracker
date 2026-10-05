@@ -4,11 +4,18 @@ import { useState } from "react";
 import { Check, Trash2 } from "lucide-react";
 import { MissionItem } from "@/lib/types";
 
+type NoteField = "noteSon" | "noteDad";
+
+const NOTE_FIELDS: { field: NoteField; who: string; placeholder: string }[] = [
+  { field: "noteSon", who: "아들", placeholder: "내 생각 적어두기" },
+  { field: "noteDad", who: "아빠", placeholder: "내 생각 적어두기" },
+];
+
 interface MissionCardProps {
   item: MissionItem;
   index: number;
   onToggle: (id: string) => void;
-  onNoteChange: (id: string, note: string) => void;
+  onNoteChange: (id: string, field: NoteField, note: string) => void;
   onDelete: (id: string) => void;
 }
 
@@ -77,7 +84,7 @@ export default function MissionCard({
           aria-label={
             item.completed
               ? `${item.moment} 완료 해제`
-              : `${item.moment} 대화 완료 체크`
+              : `${item.moment} 완료 체크`
           }
           className="w-6 h-6 flex-shrink-0 flex items-center justify-center transition-all duration-150
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
@@ -136,7 +143,7 @@ export default function MissionCard({
           </p>
         )}
 
-        {/* 아이에게 던질 질문 / 미션 */}
+        {/* 둘이 같이 이야기해볼 질문 */}
         {item.prompt && (
           <p
             className="text-body-md px-[10px] py-[8px]"
@@ -152,37 +159,45 @@ export default function MissionCard({
           </p>
         )}
 
-        {/* 아이 대답 메모 */}
-        <label className="flex flex-col gap-[4px]">
-          <span
-            className="text-caption"
-            style={{ color: "var(--muted)", fontWeight: 700 }}
-          >
-            ✎ 아이가 뭐라고 했나
-          </span>
-          <textarea
-            value={item.note}
-            onChange={(e) => onNoteChange(item.id, e.target.value)}
-            placeholder="들은 그대로 적어두면 나중에 다시 읽기 좋아요"
-            rows={2}
-            maxLength={1000}
-            className="w-full outline-none resize-y transition-colors duration-150"
-            style={{
-              padding: "10px",
-              backgroundColor: "var(--canvas)",
-              border: "2px solid var(--ink)",
-              fontSize: "16px",
-              lineHeight: 1.5,
-              color: "var(--ink)",
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = "var(--mode-accent)";
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = "var(--ink)";
-            }}
-          />
-        </label>
+        {/* 각자 쓰는 메모 — 한쪽이 다른 쪽을 기록하는 게 아니라 둘 다 쓴다 */}
+        <div className="flex flex-col gap-[8px]">
+          {NOTE_FIELDS.map(({ field, who, placeholder }) => (
+            <label key={field} className="flex flex-col gap-[4px]">
+              <span
+                className="self-start text-caption px-[6px] py-[2px]"
+                style={{
+                  backgroundColor: "var(--mode-accent)",
+                  color: "var(--on-primary)",
+                  fontWeight: 700,
+                }}
+              >
+                {who} ✎
+              </span>
+              <textarea
+                value={item[field]}
+                onChange={(e) => onNoteChange(item.id, field, e.target.value)}
+                placeholder={placeholder}
+                rows={2}
+                maxLength={1000}
+                className="w-full outline-none resize-y transition-colors duration-150"
+                style={{
+                  padding: "10px",
+                  backgroundColor: "var(--canvas)",
+                  border: "2px solid var(--ink)",
+                  fontSize: "16px",
+                  lineHeight: 1.5,
+                  color: "var(--ink)",
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "var(--mode-accent)";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "var(--ink)";
+                }}
+              />
+            </label>
+          ))}
+        </div>
       </div>
     </article>
   );

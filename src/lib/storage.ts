@@ -19,12 +19,31 @@ export function createInitialData(): JapanTripData {
 }
 
 /**
- * v1.0 데이터에는 missions가 없다. 읽어 들일 때 기본 미션을 채워 넣는다.
- * 기존 투두는 그대로 보존된다.
+ * 저장된 missions를 현재 스키마로 맞춘다. 기존 투두는 손대지 않는다.
+ * - missions 자체가 없는 v1.0 데이터 → 기본 미션 주입
+ * - note 한 칸만 있던 구버전 → 아들/아빠 칸으로 나뉜 새 문구로 교체.
+ *   직접 추가한 카드는 템플릿에 대응되는 게 없으므로 그대로 들고 간다.
  */
 function withMissions(data: JapanTripData): JapanTripData {
-  if (Array.isArray(data.missions)) return data;
-  return { ...data, missions: createDefaultMissions() };
+  const stored = data.missions;
+  if (!Array.isArray(stored)) {
+    return { ...data, missions: createDefaultMissions() };
+  }
+
+  const isCurrentSchema = stored.every(
+    (m) => typeof m?.noteSon === "string" && typeof m?.noteDad === "string"
+  );
+  if (isCurrentSchema) return data;
+
+  const carriedOver = stored
+    .filter((m) => m?.custom)
+    .map((m) => ({
+      ...m,
+      noteSon: typeof m.noteSon === "string" ? m.noteSon : "",
+      noteDad: typeof m.noteDad === "string" ? m.noteDad : "",
+    }));
+
+  return { ...data, missions: [...carriedOver, ...createDefaultMissions()] };
 }
 
 // --- API-based storage (Redis via API Route) ---

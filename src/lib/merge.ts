@@ -67,7 +67,8 @@ export function mergeTodos(
 
 /**
  * 미션 3-way merge. 투두와 같은 추가/삭제/체크 규칙에 메모 변경을 더한다.
- * - 메모: base 대비 내가 고쳤으면 내 것을 쓰고, 안 고쳤으면 서버 것을 쓴다.
+ * - 메모: 아들/아빠 칸을 따로 비교한다. 한 사람이 자기 칸만 고쳤으면
+ *   상대가 같은 카드의 다른 칸에 쓴 내용은 그대로 살아남는다.
  */
 export function mergeMissions(
   base: MissionItem[],
@@ -96,8 +97,11 @@ export function mergeMissions(
       patch.completed = item.completed;
       patch.completedAt = item.completedAt;
     }
-    if (baseItem.note !== item.note) {
-      patch.note = item.note;
+    if (baseItem.noteSon !== item.noteSon) {
+      patch.noteSon = item.noteSon;
+    }
+    if (baseItem.noteDad !== item.noteDad) {
+      patch.noteDad = item.noteDad;
     }
     if (Object.keys(patch).length > 0) edits.set(item.id, patch);
   }

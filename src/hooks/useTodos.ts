@@ -260,12 +260,12 @@ export function useTodos() {
   );
 
   const updateMissionNote = useCallback(
-    (id: string, note: string) => {
+    (id: string, field: "noteSon" | "noteDad", note: string) => {
       if (!data) return;
       setData({
         ...data,
         missions: data.missions.map((m) =>
-          m.id === id ? { ...m, note: note.slice(0, 1000) } : m
+          m.id === id ? { ...m, [field]: note.slice(0, 1000) } : m
         ),
       });
     },
