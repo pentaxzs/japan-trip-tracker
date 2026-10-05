@@ -217,6 +217,8 @@
   --mode-accent-glow: #26D9C0;
   /* accent 배경 위에 올라가는 글자색 */
   --mode-on-accent: #222222;
+  /* 활성 탭 하단 인디케이터 — accent 위에서 바로 읽혀야 한다 */
+  --mode-tab-indicator: #222222;
   --mode-hairline: #222222;
   --mode-complete-bg: #F0FFFA;
   --mode-complete-text: #999999;
@@ -233,6 +235,8 @@
   --mode-accent-glow: #FFA060;
   /* accent 배경 위에 올라가는 글자색 */
   --mode-on-accent: #222222;
+  /* 활성 탭 하단 인디케이터 — accent 위에서 바로 읽혀야 한다 */
+  --mode-tab-indicator: #222222;
   --mode-hairline: #222222;
   --mode-complete-bg: #F0FFF8;
   --mode-complete-text: #999999;
@@ -249,6 +253,8 @@
   --mode-accent-glow: #8B85FF;
   /* accent 배경 위에 올라가는 글자색 */
   --mode-on-accent: #222222;
+  /* 활성 탭 하단 인디케이터 — accent 위에서 바로 읽혀야 한다 */
+  --mode-tab-indicator: #222222;
   --mode-hairline: #222222;
   --mode-complete-bg: #F5F3FF;
   --mode-complete-text: #999999;
@@ -265,6 +271,8 @@
   --mode-accent-glow: #3B5BC4;
   /* accent 배경 위에 올라가는 글자색 */
   --mode-on-accent: #FFFFFF;
+  /* 활성 탭 하단 인디케이터 — accent 위에서 바로 읽혀야 한다 */
+  --mode-tab-indicator: #FFD93D;
   --mode-hairline: #222222;
   --mode-complete-bg: #FFF9EE;
   --mode-complete-text: #999999;

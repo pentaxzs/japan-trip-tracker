@@ -44,7 +44,7 @@ export default function TabNav({ currentTab, onTabChange }: TabNavProps) {
             {isActive && (
               <span
                 className="absolute bottom-0 left-0 right-0"
-                style={{ height: "3px", backgroundColor: "var(--mode-on-accent)" }}
+                style={{ height: "3px", backgroundColor: "var(--mode-tab-indicator)" }}
               />
             )}
           </button>
