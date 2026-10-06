@@ -93,6 +93,7 @@ export default function MissionCard({
 
   return (
     <article
+      data-no-swipe={isEditing ? "" : undefined}
       className={`flex flex-col transition-all duration-150 ${
         isDeleting ? "todo-item-exit" : ""
       }`}

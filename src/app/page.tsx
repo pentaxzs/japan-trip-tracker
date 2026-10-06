@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Archive } from "lucide-react";
 import { useTodos } from "@/hooks/useTodos";
+import { useSwipeTabs } from "@/hooks/useSwipeTabs";
+import { TAB_KEYS } from "@/constants/themes";
 import Header from "@/components/Header";
 import TabNav from "@/components/TabNav";
 import HeroSection from "@/components/HeroSection";
@@ -47,6 +49,13 @@ export default function Home() {
 
   const isMission = tab === "mission";
 
+  // 좌우 스와이프로 탭 이동 — 양 끝에서는 넘어가지 않는다
+  const swipe = useSwipeTabs((direction) => {
+    const next = TAB_KEYS.indexOf(tab) + direction;
+    if (next < 0 || next >= TAB_KEYS.length) return;
+    setTab(TAB_KEYS[next]);
+  });
+
   const [showArchive, setShowArchive] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
 
@@ -73,7 +82,11 @@ export default function Home() {
     >
       <UpdateToast visible={hasUpdate} onRefresh={refreshData} />
       <MergeToast visible={wasMerged} />
-      <div className="w-full max-w-[520px] md:max-w-[640px] mx-auto flex flex-col min-h-dvh px-0 md:my-[24px] md:min-h-0 md:border-x-[3px] md:border-b-[3px] md:border-[var(--ink)]" style={{ backgroundColor: "var(--canvas)" }}>
+      <div
+        {...swipe}
+        className="w-full max-w-[520px] md:max-w-[640px] mx-auto flex flex-col min-h-dvh px-0 md:my-[24px] md:min-h-0 md:border-x-[3px] md:border-b-[3px] md:border-[var(--ink)]"
+        style={{ backgroundColor: "var(--canvas)" }}
+      >
         {/* Header — with archive button */}
         <div className="relative">
           <Header />
