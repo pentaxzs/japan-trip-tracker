@@ -217,7 +217,7 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                                 {m.emoji} {m.moment}
                               </span>
                               {([
-                                ["아들", m.noteSon],
+                                ["아들(윤후)", m.noteSon],
                                 ["아빠", m.noteDad],
                               ] as const)
                                 .filter(([, note]) => (note ?? "").trim())

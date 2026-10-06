@@ -7,7 +7,7 @@ import { MissionItem } from "@/lib/types";
 type NoteField = "noteSon" | "noteDad";
 
 const NOTE_FIELDS: { field: NoteField; who: string; placeholder: string }[] = [
-  { field: "noteSon", who: "아들", placeholder: "내 생각 적어두기" },
+  { field: "noteSon", who: "아들(윤후)", placeholder: "내 생각 적어두기" },
   { field: "noteDad", who: "아빠", placeholder: "내 생각 적어두기" },
 ];
 
