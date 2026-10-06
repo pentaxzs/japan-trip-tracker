@@ -75,3 +75,28 @@ export const TAB_THEMES: Record<TabKey, PhaseTheme> = {
 export function isPhase(tab: TabKey): tab is TripPhase {
   return tab !== "mission";
 }
+
+// --- 날차별 색 ---
+
+export interface DayColor {
+  /** 칩·배지 배경. 흰 글자가 올라가므로 충분히 어두워야 한다 */
+  accent: string;
+  /** 관점 뱃지 배경. 검정 글자가 올라간다 */
+  light: string;
+}
+
+/**
+ * 1·2·3일차를 한눈에 구분하는 색. 전부 흰 글자 대비 5:1 이상이고,
+ * 미션 탭 크림 배경(#FFF3DC) 위에서 서로 헷갈리지 않는다.
+ * 여행이 3일을 넘으면 처음부터 다시 돈다.
+ */
+export const DAY_COLORS: DayColor[] = [
+  { accent: "#1F3A93", light: "#BFCCEF" }, // 1일차 — 네이비
+  { accent: "#C2185B", light: "#F8BBD0" }, // 2일차 — 마젠타
+  { accent: "#00796B", light: "#B2DFDB" }, // 3일차 — 틸
+];
+
+export function dayColor(day: number): DayColor {
+  const i = (Math.max(1, day) - 1) % DAY_COLORS.length;
+  return DAY_COLORS[i];
+}

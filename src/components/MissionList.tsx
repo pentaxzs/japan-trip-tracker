@@ -1,7 +1,9 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { Compass, Plus } from "lucide-react";
 import { MissionItem } from "@/lib/types";
+import { dayColor } from "@/constants/themes";
 import MissionCard, { MissionDraft } from "./MissionCard";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -113,13 +115,24 @@ export default function MissionList({
         const items = missions.filter((m) => m.day === day);
         const done = items.filter((m) => m.completed).length;
         const dateLabel = dayDateLabel(departureDate, day);
+        const color = dayColor(day);
 
         return (
-          <section key={day} className="mb-[22px] last:mb-0">
+          // accent를 섹션에 덮어쓰면 헤더 칩부터 카드 안쪽까지 한 번에 따라간다
+          <section
+            key={day}
+            className="mb-[22px] last:mb-0"
+            style={
+              {
+                "--mode-accent": color.accent,
+                "--mode-accent-light": color.light,
+              } as CSSProperties
+            }
+          >
             {/* 날차 헤더 — 구분선 겸 추가 버튼 */}
             <div
               className="flex items-center gap-[8px] py-[8px] mb-[12px]"
-              style={{ borderBottom: "3px solid var(--ink)" }}
+              style={{ borderBottom: `3px solid ${color.accent}` }}
             >
               <span
                 className="px-[10px] py-[3px] text-title-sm"
