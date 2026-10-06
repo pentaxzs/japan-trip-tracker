@@ -65,10 +65,21 @@ export function mergeTodos(
   return merged;
 }
 
+/** 내가 고쳤는지 base와 비교해 필드별로 가져오는 항목들 */
+const EDITABLE_FIELDS = [
+  "noteSon",
+  "noteDad",
+  "moment",
+  "lens",
+  "story",
+  "prompt",
+] as const satisfies readonly (keyof MissionItem)[];
+
 /**
  * 미션 3-way merge. 투두와 같은 추가/삭제/체크 규칙에 메모 변경을 더한다.
  * - 메모: 아들/아빠 칸을 따로 비교한다. 한 사람이 자기 칸만 고쳤으면
  *   상대가 같은 카드의 다른 칸에 쓴 내용은 그대로 살아남는다.
+ * - 카드 내용(제목/관점/이야기/질문)도 같은 방식으로 필드별 비교한다.
  */
 export function mergeMissions(
   base: MissionItem[],
@@ -97,11 +108,10 @@ export function mergeMissions(
       patch.completed = item.completed;
       patch.completedAt = item.completedAt;
     }
-    if (baseItem.noteSon !== item.noteSon) {
-      patch.noteSon = item.noteSon;
-    }
-    if (baseItem.noteDad !== item.noteDad) {
-      patch.noteDad = item.noteDad;
+    for (const field of EDITABLE_FIELDS) {
+      if (baseItem[field] !== item[field]) {
+        patch[field] = item[field];
+      }
     }
     if (Object.keys(patch).length > 0) edits.set(item.id, patch);
   }

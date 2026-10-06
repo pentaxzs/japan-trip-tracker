@@ -2,12 +2,13 @@
 
 import { Compass } from "lucide-react";
 import { MissionItem } from "@/lib/types";
-import MissionCard from "./MissionCard";
+import MissionCard, { MissionDraft } from "./MissionCard";
 
 interface MissionListProps {
   missions: MissionItem[];
   onToggle: (id: string) => void;
   onNoteChange: (id: string, field: "noteSon" | "noteDad", note: string) => void;
+  onEdit: (id: string, draft: MissionDraft) => void;
   onDelete: (id: string) => void;
 }
 
@@ -15,6 +16,7 @@ export default function MissionList({
   missions,
   onToggle,
   onNoteChange,
+  onEdit,
   onDelete,
 }: MissionListProps) {
   if (missions.length === 0) {
@@ -69,6 +71,7 @@ export default function MissionList({
             index={i}
             onToggle={onToggle}
             onNoteChange={onNoteChange}
+            onEdit={onEdit}
             onDelete={onDelete}
           />
         ))}

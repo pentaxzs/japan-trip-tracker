@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { JapanTripData, TodoItem, TripPhase } from "@/lib/types";
+import { JapanTripData, TodoItem, TripPhase, MissionItem } from "@/lib/types";
 import {
   fetchTripData,
   saveTripDataToServer,
@@ -272,6 +272,30 @@ export function useTodos() {
     [data]
   );
 
+  const editMission = useCallback(
+    (
+      id: string,
+      draft: Pick<MissionItem, "moment" | "lens" | "story" | "prompt">
+    ) => {
+      if (!data) return;
+      setData({
+        ...data,
+        missions: data.missions.map((m) =>
+          m.id === id
+            ? {
+                ...m,
+                moment: draft.moment.slice(0, 100),
+                lens: draft.lens.slice(0, 200),
+                story: draft.story.slice(0, 1000),
+                prompt: draft.prompt.slice(0, 1000),
+              }
+            : m
+        ),
+      });
+    },
+    [data]
+  );
+
   const deleteMission = useCallback(
     (id: string) => {
       if (!data) return;
@@ -327,6 +351,7 @@ export function useTodos() {
     addMission,
     toggleMission,
     updateMissionNote,
+    editMission,
     deleteMission,
     missionCompletedCount,
     missionTotalCount,

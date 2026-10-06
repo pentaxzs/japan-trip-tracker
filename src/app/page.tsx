@@ -37,6 +37,7 @@ export default function Home() {
     addMission,
     toggleMission,
     updateMissionNote,
+    editMission,
     deleteMission,
     missionCompletedCount,
     missionTotalCount,
@@ -131,6 +132,7 @@ export default function Home() {
             missions={missions}
             onToggle={toggleMission}
             onNoteChange={updateMissionNote}
+            onEdit={editMission}
             onDelete={deleteMission}
           />
         ) : (
