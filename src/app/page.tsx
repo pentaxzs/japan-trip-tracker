@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Archive } from "lucide-react";
 import { useTodos } from "@/hooks/useTodos";
 import { useSwipeTabs } from "@/hooks/useSwipeTabs";
-import { TAB_KEYS } from "@/constants/themes";
+import { TAB_KEYS, TabKey } from "@/constants/themes";
 import Header from "@/components/Header";
 import TabNav from "@/components/TabNav";
 import HeroSection from "@/components/HeroSection";
@@ -49,11 +49,25 @@ export default function Home() {
 
   const isMission = tab === "mission";
 
+  // 새 탭이 들어오는 방향. 다음 탭이면 오른쪽에서, 이전 탭이면 왼쪽에서.
+  const [enterFrom, setEnterFrom] = useState<1 | -1>(1);
+
+  const goToTab = useCallback(
+    (next: TabKey) => {
+      const from = TAB_KEYS.indexOf(tab);
+      const to = TAB_KEYS.indexOf(next);
+      if (to === from) return;
+      setEnterFrom(to > from ? 1 : -1);
+      setTab(next);
+    },
+    [tab, setTab]
+  );
+
   // 좌우 스와이프로 탭 이동 — 양 끝에서는 넘어가지 않는다
   const swipe = useSwipeTabs((direction) => {
     const next = TAB_KEYS.indexOf(tab) + direction;
     if (next < 0 || next >= TAB_KEYS.length) return;
-    setTab(TAB_KEYS[next]);
+    goToTab(TAB_KEYS[next]);
   });
 
   const [showArchive, setShowArchive] = useState(false);
@@ -84,7 +98,7 @@ export default function Home() {
       <MergeToast visible={wasMerged} />
       <div
         {...swipe}
-        className="w-full max-w-[520px] md:max-w-[640px] mx-auto flex flex-col min-h-dvh px-0 md:my-[24px] md:min-h-0 md:border-x-[3px] md:border-b-[3px] md:border-[var(--ink)]"
+        className="w-full max-w-[520px] md:max-w-[640px] mx-auto flex flex-col min-h-dvh overflow-x-hidden px-0 md:my-[24px] md:min-h-0 md:border-x-[3px] md:border-b-[3px] md:border-[var(--ink)]"
         style={{ backgroundColor: "var(--canvas)" }}
       >
         {/* Header — with archive button */}
@@ -117,8 +131,16 @@ export default function Home() {
         />
 
         {/* Tab Navigation — 48px fixed, Airbnb nav-link style */}
-        <TabNav currentTab={tab} onTabChange={setTab} />
+        <TabNav currentTab={tab} onTabChange={goToTab} />
 
+        {/* 탭 내용 — key가 바뀌면 방향에 맞춰 밀려 들어온다.
+            탭 바와 하단 입력창은 바깥에 둬서 transform에 영향받지 않는다 */}
+        <div
+          key={tab}
+          className={`flex-1 flex flex-col ${
+            enterFrom === 1 ? "tab-enter-right" : "tab-enter-left"
+          }`}
+        >
         {/* Hero Section — gradient background */}
         <div
           className="w-full"
@@ -221,6 +243,8 @@ export default function Home() {
             )}
           </div>
         )}
+
+        </div>
 
         {/* Input Area — 미션 탭은 날차 헤더의 + 로 추가한다 */}
         {!isMission && (

@@ -314,11 +314,35 @@
   appearance: none;
 }
 
+/* === 탭 전환 — 스와이프 방향에서 밀려 들어온다 === */
+@keyframes tab-enter-from-right {
+  from { opacity: 0; transform: translate3d(28px, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes tab-enter-from-left {
+  from { opacity: 0; transform: translate3d(-28px, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.tab-enter-right,
+.tab-enter-left {
+  /* 애니메이션이 끝나면 transform을 남기지 않는다 (sticky·fixed 보호) */
+  animation-duration: 240ms;
+  animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+  animation-fill-mode: backwards;
+}
+
+.tab-enter-right { animation-name: tab-enter-from-right; }
+.tab-enter-left  { animation-name: tab-enter-from-left; }
+
 /* === Reduced motion === */
 @media (prefers-reduced-motion: reduce) {
   .animate-slide-in,
   .animate-check-pop,
-  .animate-fade-in {
+  .animate-fade-in,
+  .tab-enter-right,
+  .tab-enter-left {
     animation: none !important;
   }
   .mode-container {
