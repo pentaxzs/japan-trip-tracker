@@ -39,6 +39,7 @@ export default function Home() {
     updateMissionNote,
     editMission,
     deleteMission,
+    newMissionId,
     missionCompletedCount,
     missionTotalCount,
     missionProgress,
@@ -130,6 +131,10 @@ export default function Home() {
         {isMission ? (
           <MissionList
             missions={missions}
+            departureDate={tripInfo.departureDate}
+            returnDate={tripInfo.returnDate}
+            newMissionId={newMissionId}
+            onAdd={addMission}
             onToggle={toggleMission}
             onNoteChange={updateMissionNote}
             onEdit={editMission}
@@ -204,25 +209,18 @@ export default function Home() {
           </div>
         )}
 
-        {/* Input Area — pinned to bottom */}
-        <div
-          className="sticky bottom-0 border-t"
-          style={{
-            backgroundColor: "var(--mode-bg)",
-            borderColor: "var(--hairline)",
-          }}
-        >
-          {isMission ? (
-            <TodoInput
-              key="mission-input"
-              onAdd={addMission}
-              placeholder="+ 우리만의 순간을 추가하세요..."
-              addLabel="미션 추가"
-            />
-          ) : (
-            <TodoInput key="todo-input" onAdd={addTodo} />
-          )}
-        </div>
+        {/* Input Area — 미션 탭은 날차 헤더의 + 로 추가한다 */}
+        {!isMission && (
+          <div
+            className="sticky bottom-0 border-t"
+            style={{
+              backgroundColor: "var(--mode-bg)",
+              borderColor: "var(--hairline)",
+            }}
+          >
+            <TodoInput onAdd={addTodo} />
+          </div>
+        )}
       </div>
     </div>
   );

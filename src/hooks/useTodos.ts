@@ -230,12 +230,15 @@ export function useTodos() {
 
   const missions = data?.missions ?? [];
 
+  // 새로 만든 카드는 바로 수정 모드로 열어준다 (제목부터 쓰게)
+  const [newMissionId, setNewMissionId] = useState<string | null>(null);
+
   const addMission = useCallback(
-    (moment: string) => {
+    (day: number) => {
       if (!data) return;
-      const trimmed = moment.trim();
-      if (!trimmed || trimmed.length > 200) return;
-      setData({ ...data, missions: [createCustomMission(trimmed), ...data.missions] });
+      const created = createCustomMission(day);
+      setNewMissionId(created.id);
+      setData({ ...data, missions: [...data.missions, created] });
     },
     [data]
   );
@@ -275,15 +278,17 @@ export function useTodos() {
   const editMission = useCallback(
     (
       id: string,
-      draft: Pick<MissionItem, "moment" | "lens" | "story" | "prompt">
+      draft: Pick<MissionItem, "day" | "moment" | "lens" | "story" | "prompt">
     ) => {
       if (!data) return;
+      setNewMissionId(null);
       setData({
         ...data,
         missions: data.missions.map((m) =>
           m.id === id
             ? {
                 ...m,
+                day: draft.day,
                 moment: draft.moment.slice(0, 100),
                 lens: draft.lens.slice(0, 200),
                 story: draft.story.slice(0, 1000),
@@ -299,6 +304,7 @@ export function useTodos() {
   const deleteMission = useCallback(
     (id: string) => {
       if (!data) return;
+      setNewMissionId(null);
       setData({ ...data, missions: data.missions.filter((m) => m.id !== id) });
     },
     [data]
@@ -353,6 +359,7 @@ export function useTodos() {
     updateMissionNote,
     editMission,
     deleteMission,
+    newMissionId,
     missionCompletedCount,
     missionTotalCount,
     missionProgress,

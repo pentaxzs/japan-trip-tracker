@@ -69,11 +69,24 @@ export function mergeTodos(
 const EDITABLE_FIELDS = [
   "noteSon",
   "noteDad",
+  "day",
   "moment",
   "lens",
   "story",
   "prompt",
 ] as const satisfies readonly (keyof MissionItem)[];
+
+/** 필드 하나를 base와 비교해 바뀌었으면 patch에 담는다 */
+function copyIfChanged<K extends (typeof EDITABLE_FIELDS)[number]>(
+  patch: Partial<MissionItem>,
+  base: MissionItem,
+  local: MissionItem,
+  field: K
+): void {
+  if (base[field] !== local[field]) {
+    patch[field] = local[field];
+  }
+}
 
 /**
  * 미션 3-way merge. 투두와 같은 추가/삭제/체크 규칙에 메모 변경을 더한다.
@@ -109,9 +122,7 @@ export function mergeMissions(
       patch.completedAt = item.completedAt;
     }
     for (const field of EDITABLE_FIELDS) {
-      if (baseItem[field] !== item[field]) {
-        patch[field] = item[field];
-      }
+      copyIfChanged(patch, baseItem, item, field);
     }
     if (Object.keys(patch).length > 0) edits.set(item.id, patch);
   }

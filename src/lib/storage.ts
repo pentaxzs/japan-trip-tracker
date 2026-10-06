@@ -1,5 +1,9 @@
-import { JapanTripData, ArchivedTrip } from "./types";
-import { createDefaultTodos, createDefaultMissions } from "./templates";
+import { JapanTripData, ArchivedTrip, MissionItem } from "./types";
+import {
+  createDefaultTodos,
+  createDefaultMissions,
+  LEGACY_MOMENTS,
+} from "./templates";
 
 export function createInitialData(): JapanTripData {
   const now = new Date().toISOString();
@@ -33,7 +37,7 @@ function withMissions(data: JapanTripData): JapanTripData {
   const isCurrentSchema = stored.every(
     (m) => typeof m?.noteSon === "string" && typeof m?.noteDad === "string"
   );
-  if (isCurrentSchema) return data;
+  if (isCurrentSchema) return { ...data, missions: withDays(stored) };
 
   const carriedOver = stored
     .filter((m) => m?.custom)
@@ -41,9 +45,33 @@ function withMissions(data: JapanTripData): JapanTripData {
       ...m,
       noteSon: typeof m.noteSon === "string" ? m.noteSon : "",
       noteDad: typeof m.noteDad === "string" ? m.noteDad : "",
+      day: typeof m.day === "number" ? m.day : 1,
     }));
 
   return { ...data, missions: [...carriedOver, ...createDefaultMissions()] };
+}
+
+/**
+ * day가 없던 시절 데이터에 날차를 채운다.
+ * 메모와 체크, 직접 고친 문구는 전부 그대로 둔다. 제목은 손대지 않은
+ * 카드만 "1일차 · 시부야" → "시부야"처럼 접두사를 뗀다.
+ */
+function withDays(missions: MissionItem[]): MissionItem[] {
+  if (missions.every((m) => typeof m.day === "number")) return missions;
+
+  const defaults = new Map(createDefaultMissions().map((m) => [m.id, m]));
+  return missions.map((m) => {
+    if (typeof m.day === "number") return m;
+    const template = defaults.get(m.id);
+    // 직접 추가한 카드는 대응되는 템플릿이 없다 → 1일차로 둔다
+    if (!template) return { ...m, day: 1 };
+    const untouchedTitle = LEGACY_MOMENTS[m.id] === m.moment;
+    return {
+      ...m,
+      day: template.day,
+      moment: untouchedTitle ? template.moment : m.moment,
+    };
+  });
 }
 
 // --- API-based storage (Redis via API Route) ---

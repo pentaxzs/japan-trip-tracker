@@ -84,15 +84,20 @@ export function createDefaultTodos(): TodosByPhase {
 
 // --- 미션: 아빠가 아들에게 남길 순간들 ---
 
-type MissionSeed = Pick<MissionItem, "emoji" | "moment" | "lens" | "story" | "prompt">;
+type MissionSeed = Pick<
+  MissionItem,
+  "emoji" | "day" | "moment" | "lens" | "story" | "prompt"
+>;
 
 /**
- * 2박 3일 도쿄 일정의 흐름을 따라가는 11개의 순간.
+ * 2박 3일 도쿄 일정의 흐름을 따라가는 11개의 순간 (1일차 5 / 2일차 4 / 3일차 2).
  * 많이 보여주기보다 장소마다 딱 하나의 이야기만 남기는 것이 목표.
+ * 제목에 "N일차"를 넣지 않는다 — 날차는 목록 헤더가 보여준다.
  */
 const MISSION_SEEDS: MissionSeed[] = [
   {
     emoji: "🛫",
+    day: 1,
     moment: "출국 · 비행기",
     lens: "세상은 생각보다 넓다",
     story:
@@ -101,6 +106,7 @@ const MISSION_SEEDS: MissionSeed[] = [
   },
   {
     emoji: "🚃",
+    day: 1,
     moment: "나리타 → 도쿄",
     lens: "낯선 곳에서 길 찾기",
     story:
@@ -109,7 +115,8 @@ const MISSION_SEEDS: MissionSeed[] = [
   },
   {
     emoji: "🏙",
-    moment: "1일차 · 시부야",
+    day: 1,
+    moment: "시부야",
     lens: "같은 도시도 다르게 설계된다",
     story:
       "사람이 이렇게 많은데 생각보다 서로 부딪히지 않는다. 그냥 그렇게 된 게 아니라 길이랑 신호를 그렇게 만들어 둔 것이다.",
@@ -117,6 +124,7 @@ const MISSION_SEEDS: MissionSeed[] = [
   },
   {
     emoji: "🍜",
+    day: 1,
     moment: "시부야 식사 · 쇼핑",
     lens: "언어는 시험이 아니라 도구다",
     story:
@@ -126,7 +134,8 @@ const MISSION_SEEDS: MissionSeed[] = [
   },
   {
     emoji: "🌙",
-    moment: "1일차 저녁",
+    day: 1,
+    moment: "저녁",
     lens: "누구에게나 서툴렀던 때가 있다",
     story:
       "아빠가 일본에서 일할 때도 당황한 일, 실수한 일이 많았다. 지금은 웃으면서 이야기할 수 있는 것들이다.",
@@ -134,7 +143,8 @@ const MISSION_SEEDS: MissionSeed[] = [
   },
   {
     emoji: "📘",
-    moment: "2일차 · 후지코·F·후지오 뮤지엄",
+    day: 2,
+    moment: "후지코·F·후지오 뮤지엄",
     lens: "좋아하는 걸 오래 하면 뭔가 남는다",
     story:
       "도라에몽 뒤에는 한 사람이 수십 년 동안 그리고, 생각하고, 이야기를 만든 시간이 있다. 엄청 유명해지는 것보다 좋아하는 걸 오래 하는 게 더 어렵다.",
@@ -142,6 +152,7 @@ const MISSION_SEEDS: MissionSeed[] = [
   },
   {
     emoji: "🚶",
+    day: 2,
     moment: "도쿄 이동 중",
     lens: "관광지가 아니라 사람들이 사는 곳",
     story:
@@ -150,6 +161,7 @@ const MISSION_SEEDS: MissionSeed[] = [
   },
   {
     emoji: "🏪",
+    day: 2,
     moment: "편의점 · 자판기 · 전철",
     lens: "세상은 누군가가 설계한 것이다",
     story:
@@ -158,7 +170,8 @@ const MISSION_SEEDS: MissionSeed[] = [
   },
   {
     emoji: "💴",
-    moment: "2일차 저녁",
+    day: 2,
+    moment: "저녁",
     lens: "돈은 크기가 아니라 선택이다",
     story:
       "돈이 무한히 있으면 다 살 수 있지만, 실제로는 뭘 더 원하는지 골라야 한다. 어른도 매일 하는 고민이다.",
@@ -166,7 +179,8 @@ const MISSION_SEEDS: MissionSeed[] = [
   },
   {
     emoji: "🗼",
-    moment: "3일차 · 도쿄타워",
+    day: 3,
+    moment: "도쿄타워",
     lens: "앞으로 볼 세상은 지금보다 넓다",
     story:
       "저 건물들 안에 정말 다양한 일을 하는 사람들이 있다. 아빠도 아직 모르는 게 많고 계속 배우면서 산다. 지금 뭐가 될지 정하지 않아도 된다.",
@@ -174,6 +188,7 @@ const MISSION_SEEDS: MissionSeed[] = [
   },
   {
     emoji: "✈️",
+    day: 3,
     moment: "귀국길",
     lens: "여행을 각자의 기억으로",
     story:
@@ -205,10 +220,11 @@ export function createDefaultMissions(): MissionItem[] {
 }
 
 /** 직접 추가하는 빈 카드 — 제목과 메모만 쓴다. */
-export function createCustomMission(moment: string): MissionItem {
+export function createCustomMission(day: number, moment = "새 순간"): MissionItem {
   return {
     id: crypto.randomUUID(),
     emoji: "📌",
+    day,
     moment,
     lens: "",
     story: "",
@@ -221,3 +237,15 @@ export function createCustomMission(moment: string): MissionItem {
     createdAt: new Date().toISOString(),
   };
 }
+
+/**
+ * 날차 헤더가 생기기 전 제목들. 헤더가 "1일차"를 보여주므로 제목에서 뺐다.
+ * 사용자가 직접 고치지 않은 카드만 새 제목으로 갱신하려고 들고 있는다.
+ */
+export const LEGACY_MOMENTS: Record<string, string> = {
+  "mission-03": "1일차 · 시부야",
+  "mission-05": "1일차 저녁",
+  "mission-06": "2일차 · 후지코·F·후지오 뮤지엄",
+  "mission-09": "2일차 저녁",
+  "mission-10": "3일차 · 도쿄타워",
+};

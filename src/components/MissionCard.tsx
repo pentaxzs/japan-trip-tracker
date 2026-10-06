@@ -14,7 +14,7 @@ const NOTE_FIELDS: { field: NoteField; who: string; placeholder: string }[] = [
 /** 수정 가능한 필드 — 메모(noteSon/noteDad)는 수정 모드와 무관하게 늘 쓸 수 있다 */
 export type MissionDraft = Pick<
   MissionItem,
-  "moment" | "lens" | "story" | "prompt"
+  "day" | "moment" | "lens" | "story" | "prompt"
 >;
 
 const EDIT_FIELDS: {
@@ -40,6 +40,7 @@ const inputStyle = {
 
 function toDraft(item: MissionItem): MissionDraft {
   return {
+    day: item.day,
     moment: item.moment,
     lens: item.lens,
     story: item.story,
@@ -49,7 +50,12 @@ function toDraft(item: MissionItem): MissionDraft {
 
 interface MissionCardProps {
   item: MissionItem;
+  /** 날차 안에서의 순번 (0부터) */
   index: number;
+  /** 선택 가능한 날차 목록 — 수정 모드에서 카드를 옮길 때 쓴다 */
+  days: number[];
+  /** 방금 추가된 카드면 바로 수정 모드로 연다 */
+  autoEdit?: boolean;
   onToggle: (id: string) => void;
   onNoteChange: (id: string, field: NoteField, note: string) => void;
   onEdit: (id: string, draft: MissionDraft) => void;
@@ -59,13 +65,17 @@ interface MissionCardProps {
 export default function MissionCard({
   item,
   index,
+  days,
+  autoEdit,
   onToggle,
   onNoteChange,
   onEdit,
   onDelete,
 }: MissionCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
-  const [draft, setDraft] = useState<MissionDraft | null>(null);
+  const [draft, setDraft] = useState<MissionDraft | null>(
+    autoEdit ? toDraft(item) : null
+  );
   const isEditing = draft !== null;
 
   const handleDelete = () => {
@@ -185,6 +195,38 @@ export default function MissionCard({
       <div className="flex flex-col gap-[10px] px-[14px] py-[12px]">
         {isEditing ? (
           <>
+            <div className="flex flex-col gap-[4px]">
+              <span
+                className="text-caption"
+                style={{ color: "var(--muted)", fontWeight: 700 }}
+              >
+                날차
+              </span>
+              <div className="flex gap-[6px]">
+                {days.map((d) => {
+                  const active = draft.day === d;
+                  return (
+                    <button
+                      key={d}
+                      onClick={() => setDraft({ ...draft, day: d })}
+                      aria-pressed={active}
+                      className="flex-1 h-[40px] text-caption"
+                      style={{
+                        border: "2px solid var(--ink)",
+                        backgroundColor: active
+                          ? "var(--mode-accent)"
+                          : "var(--canvas)",
+                        color: active ? "var(--on-primary)" : "var(--ink)",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {d}일차
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {EDIT_FIELDS.map(({ field, label, placeholder, multiline }) => (
               <label key={field} className="flex flex-col gap-[4px]">
                 <span

@@ -32,6 +32,8 @@ export interface TodosByPhase {
 export interface MissionItem {
   id: string;
   emoji: string;
+  /** 여행 며칠째인지 — 1부터 시작 */
+  day: number;
   /** 순간 이름 — "시부야", "귀국길" */
   moment: string;
   /** 관점 한 줄 — "낯선 곳에서 길 찾기" */
