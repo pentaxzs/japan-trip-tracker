@@ -98,7 +98,7 @@ export default function Home() {
       <MergeToast visible={wasMerged} />
       <div
         {...swipe}
-        className="w-full max-w-[520px] md:max-w-[640px] mx-auto flex flex-col min-h-dvh overflow-x-hidden px-0 md:my-[24px] md:min-h-0 md:border-x-[3px] md:border-b-[3px] md:border-[var(--ink)]"
+        className="w-full max-w-[520px] md:max-w-[640px] mx-auto flex flex-col min-h-dvh overflow-x-clip px-0 md:my-[24px] md:min-h-0 md:border-x-[3px] md:border-b-[3px] md:border-[var(--ink)]"
         style={{ backgroundColor: "var(--canvas)" }}
       >
         {/* Header — with archive button */}
