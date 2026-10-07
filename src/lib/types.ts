@@ -42,9 +42,12 @@ export interface MissionItem {
   story: string;
   /** 둘이 같이 이야기해볼 질문 */
   prompt: string;
-  /** 아들이 쓰는 메모 */
+  /**
+   * 메모 두 칸. 키 이름은 처음 만들 때 그대로 두었다.
+   * noteSon = 아이 칸, noteDad = 보호자 칸이고,
+   * 화면에 뜨는 이름은 tripInfo.members가 정한다 (아빠/엄마, 윤후/윤완).
+   */
   noteSon: string;
-  /** 아빠가 쓰는 메모 */
   noteDad: string;
   completed: boolean;
   completedAt: string | null;
@@ -53,11 +56,20 @@ export interface MissionItem {
   createdAt: string;
 }
 
+/** 미션 메모 두 칸에 붙는 이름 */
+export interface TripMembers {
+  /** 메모 첫째 칸 — 아이 */
+  child: string;
+  /** 메모 둘째 칸 — 보호자 */
+  parent: string;
+}
+
 export interface TripInfo {
   title: string;
   destination: string;
   departureDate: string | null;
   returnDate: string | null;
+  members: TripMembers;
 }
 
 export interface WeatherData {

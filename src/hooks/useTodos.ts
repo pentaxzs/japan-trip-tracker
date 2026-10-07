@@ -7,6 +7,7 @@ import {
   saveTripDataToServer,
   archiveTripToServer,
   createInitialData,
+  DEFAULT_MEMBERS,
 } from "@/lib/storage";
 import { mergeTodos, mergeMissions } from "@/lib/merge";
 import { createCustomMission } from "@/lib/templates";
@@ -275,6 +276,25 @@ export function useTodos() {
     [data]
   );
 
+  /** 아카이브에서 고른 카드를 새 id로 복제해 담는다. 메모와 체크는 가져오지 않는다 */
+  const importMissions = useCallback(
+    (picked: MissionItem[]) => {
+      if (!data || picked.length === 0) return;
+      const copies: MissionItem[] = picked.map((m) => ({
+        ...m,
+        id: crypto.randomUUID(),
+        noteSon: "",
+        noteDad: "",
+        completed: false,
+        completedAt: null,
+        custom: true,
+        createdAt: new Date().toISOString(),
+      }));
+      setData({ ...data, missions: [...data.missions, ...copies] });
+    },
+    [data]
+  );
+
   const editMission = useCallback(
     (
       id: string,
@@ -347,7 +367,13 @@ export function useTodos() {
     totalCount,
     progress,
     isLoaded: data !== null,
-    tripInfo: data?.tripInfo ?? { title: "일본 여행", destination: "tokyo", departureDate: null, returnDate: null },
+    tripInfo: data?.tripInfo ?? {
+      title: "일본 여행",
+      destination: "tokyo",
+      departureDate: null,
+      returnDate: null,
+      members: DEFAULT_MEMBERS,
+    },
     updateTripInfo,
     endTrip,
     hasUpdate,
@@ -358,6 +384,7 @@ export function useTodos() {
     toggleMission,
     updateMissionNote,
     editMission,
+    importMissions,
     deleteMission,
     newMissionId,
     missionCompletedCount,

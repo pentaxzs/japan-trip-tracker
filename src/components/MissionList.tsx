@@ -1,8 +1,8 @@
 "use client";
 
-import type { CSSProperties } from "react";
-import { Compass, Plus } from "lucide-react";
-import { MissionItem } from "@/lib/types";
+import { useState, type CSSProperties } from "react";
+import { Compass, Plus, Pencil, Download } from "lucide-react";
+import { MissionItem, TripMembers } from "@/lib/types";
 import { dayColor } from "@/constants/themes";
 import MissionCard, { MissionDraft } from "./MissionCard";
 
@@ -22,6 +22,9 @@ interface MissionListProps {
   departureDate: string | null;
   returnDate: string | null;
   newMissionId: string | null;
+  members: TripMembers;
+  onMembersChange: (members: TripMembers) => void;
+  onOpenImport: () => void;
   onToggle: (id: string) => void;
   onNoteChange: (id: string, field: "noteSon" | "noteDad", note: string) => void;
   onEdit: (id: string, draft: MissionDraft) => void;
@@ -59,6 +62,9 @@ export default function MissionList({
   departureDate,
   returnDate,
   newMissionId,
+  members,
+  onMembersChange,
+  onOpenImport,
   onToggle,
   onNoteChange,
   onEdit,
@@ -66,6 +72,105 @@ export default function MissionList({
   onDelete,
 }: MissionListProps) {
   const days = resolveDays(missions, departureDate, returnDate);
+  const [draft, setDraft] = useState<TripMembers | null>(null);
+
+  const saveMembers = () => {
+    if (!draft) return;
+    // 비우면 누구 칸인지 알 수 없어진다 — 원래 이름을 지킨다
+    onMembersChange({
+      child: draft.child.trim() || members.child,
+      parent: draft.parent.trim() || members.parent,
+    });
+    setDraft(null);
+  };
+
+  const memberRow = (
+    <div className="mb-[14px]">
+      {draft ? (
+        <div
+          className="flex flex-col gap-[8px] px-[12px] py-[12px]"
+          style={{ border: "2px solid var(--ink)", backgroundColor: "var(--canvas)" }}
+        >
+          <span className="text-caption" style={{ color: "var(--muted)", fontWeight: 700 }}>
+            메모 칸에 붙을 이름
+          </span>
+          {([
+            ["child", "첫째 칸"],
+            ["parent", "둘째 칸"],
+          ] as const).map(([key, label]) => (
+            <label key={key} className="flex items-center gap-[8px]">
+              <span
+                className="text-caption flex-shrink-0"
+                style={{ color: "var(--muted)", fontWeight: 600, width: "52px" }}
+              >
+                {label}
+              </span>
+              <input
+                type="text"
+                value={draft[key]}
+                onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
+                maxLength={30}
+                className="flex-1 outline-none"
+                style={{
+                  padding: "8px 10px",
+                  backgroundColor: "var(--canvas)",
+                  border: "2px solid var(--ink)",
+                  fontSize: "16px",
+                  color: "var(--ink)",
+                }}
+              />
+            </label>
+          ))}
+          <div className="flex justify-end gap-[8px]">
+            <button
+              onClick={() => setDraft(null)}
+              className="px-[14px] h-[40px] text-button-md"
+              style={{ border: "2px solid var(--ink)", backgroundColor: "var(--canvas)", color: "var(--ink)" }}
+            >
+              취소
+            </button>
+            <button
+              onClick={saveMembers}
+              className="px-[14px] h-[40px] text-button-md"
+              style={{
+                border: "2px solid var(--ink)",
+                backgroundColor: "var(--mode-accent)",
+                color: "var(--on-primary)",
+                fontWeight: 700,
+              }}
+            >
+              저장
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-center gap-[8px]">
+          <button
+            onClick={() => setDraft(members)}
+            className="flex items-center gap-[6px] text-caption"
+            style={{ color: "var(--ink)", fontWeight: 700 }}
+          >
+            <Pencil size={13} strokeWidth={2} style={{ color: "var(--muted)" }} />
+            {members.child} · {members.parent}
+          </button>
+          <span className="flex-1" />
+          <button
+            onClick={onOpenImport}
+            className="flex items-center gap-[5px] px-[10px] h-[32px] text-caption"
+            style={{
+              border: "2px solid var(--ink)",
+              backgroundColor: "var(--canvas)",
+              color: "var(--ink)",
+              fontWeight: 700,
+            }}
+          >
+            <Download size={13} strokeWidth={2.5} style={{ color: "inherit" }} />
+            지난 여행에서
+          </button>
+        </div>
+      )}
+    </div>
+  );
 
   if (missions.length === 0) {
     return (
@@ -87,6 +192,19 @@ export default function MissionList({
             날차 옆 + 를 눌러 우리만의 순간을 추가해보세요
           </p>
         </div>
+        <button
+          onClick={onOpenImport}
+          className="flex items-center gap-[5px] px-[12px] h-[40px] text-button-md"
+          style={{
+            border: "2px solid var(--ink)",
+            backgroundColor: "var(--canvas)",
+            color: "var(--ink)",
+            fontWeight: 700,
+          }}
+        >
+          <Download size={14} strokeWidth={2.5} style={{ color: "inherit" }} />
+          지난 여행에서 가져오기
+        </button>
       </div>
     );
   }
@@ -110,6 +228,8 @@ export default function MissionList({
           빈칸은 비워둬도 괜찮아요.
         </p>
       </div>
+
+      {memberRow}
 
       {days.map((day) => {
         const items = missions.filter((m) => m.day === day);
@@ -190,6 +310,7 @@ export default function MissionList({
                     item={item}
                     index={i}
                     days={days}
+                    members={members}
                     autoEdit={item.id === newMissionId}
                     onToggle={onToggle}
                     onNoteChange={onNoteChange}

@@ -1,9 +1,14 @@
-import { JapanTripData, ArchivedTrip, MissionItem } from "./types";
+import { JapanTripData, ArchivedTrip, MissionItem, TripMembers } from "./types";
 import {
   createDefaultTodos,
   createDefaultMissions,
   LEGACY_MOMENTS,
 } from "./templates";
+
+export const DEFAULT_MEMBERS: TripMembers = {
+  child: "아들(윤후)",
+  parent: "아빠",
+};
 
 export function createInitialData(): JapanTripData {
   const now = new Date().toISOString();
@@ -16,6 +21,7 @@ export function createInitialData(): JapanTripData {
       destination: "tokyo",
       departureDate: null,
       returnDate: null,
+      members: DEFAULT_MEMBERS,
     },
     todos: createDefaultTodos(),
     missions: createDefaultMissions(),
@@ -28,6 +34,13 @@ export function createInitialData(): JapanTripData {
  * - note 한 칸만 있던 구버전 → 아들/아빠 칸으로 나뉜 새 문구로 교체.
  *   직접 추가한 카드는 템플릿에 대응되는 게 없으므로 그대로 들고 간다.
  */
+/** members가 없던 데이터에 기본 이름을 채운다 */
+function withMembers(data: JapanTripData): JapanTripData {
+  const m = data.tripInfo?.members;
+  if (m && typeof m.child === "string" && typeof m.parent === "string") return data;
+  return { ...data, tripInfo: { ...data.tripInfo, members: DEFAULT_MEMBERS } };
+}
+
 function withMissions(data: JapanTripData): JapanTripData {
   const stored = data.missions;
   if (!Array.isArray(stored)) {
@@ -80,7 +93,7 @@ export async function fetchTripData(): Promise<JapanTripData> {
   try {
     const res = await fetch("/api/todos");
     const data = await res.json();
-    if (data) return withMissions(data as JapanTripData);
+    if (data) return withMembers(withMissions(data as JapanTripData));
   } catch {
     // API unavailable
   }

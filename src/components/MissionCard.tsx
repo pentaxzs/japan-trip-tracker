@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { Check, Pencil, Trash2 } from "lucide-react";
-import { MissionItem } from "@/lib/types";
+import { MissionItem, TripMembers } from "@/lib/types";
 
 type NoteField = "noteSon" | "noteDad";
 
-const NOTE_FIELDS: { field: NoteField; who: string; placeholder: string }[] = [
-  { field: "noteSon", who: "아들(윤후)", placeholder: "내 생각 적어두기" },
-  { field: "noteDad", who: "아빠", placeholder: "내 생각 적어두기" },
+/** 메모 칸 두 개. 붙는 이름은 여행마다 다르다 (아빠/엄마, 윤후/윤완) */
+const NOTE_FIELDS: { field: NoteField; member: keyof TripMembers }[] = [
+  { field: "noteSon", member: "child" },
+  { field: "noteDad", member: "parent" },
 ];
 
 /** 수정 가능한 필드 — 메모(noteSon/noteDad)는 수정 모드와 무관하게 늘 쓸 수 있다 */
@@ -54,6 +55,8 @@ interface MissionCardProps {
   index: number;
   /** 선택 가능한 날차 목록 — 수정 모드에서 카드를 옮길 때 쓴다 */
   days: number[];
+  /** 메모 칸에 붙을 이름 */
+  members: TripMembers;
   /** 방금 추가된 카드면 바로 수정 모드로 연다 */
   autoEdit?: boolean;
   onToggle: (id: string) => void;
@@ -66,6 +69,7 @@ export default function MissionCard({
   item,
   index,
   days,
+  members,
   autoEdit,
   onToggle,
   onNoteChange,
@@ -349,7 +353,7 @@ export default function MissionCard({
 
             {/* 각자 쓰는 메모 — 한쪽이 다른 쪽을 기록하는 게 아니라 둘 다 쓴다 */}
             <div className="flex flex-col gap-[8px]">
-              {NOTE_FIELDS.map(({ field, who, placeholder }) => (
+              {NOTE_FIELDS.map(({ field, member }) => (
                 <label key={field} className="flex flex-col gap-[4px]">
                   <span
                     className="self-start text-caption px-[6px] py-[2px]"
@@ -359,12 +363,12 @@ export default function MissionCard({
                       fontWeight: 700,
                     }}
                   >
-                    {who} ✎
+                    {members[member]} ✎
                   </span>
                   <textarea
                     value={item[field]}
                     onChange={(e) => onNoteChange(item.id, field, e.target.value)}
-                    placeholder={placeholder}
+                    placeholder="내 생각 적어두기"
                     rows={2}
                     maxLength={1000}
                     className="w-full outline-none resize-y transition-colors duration-150"

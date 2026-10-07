@@ -11,6 +11,7 @@ import HeroSection from "@/components/HeroSection";
 import ProgressBar from "@/components/ProgressBar";
 import TodoList from "@/components/TodoList";
 import MissionList from "@/components/MissionList";
+import MissionImport from "@/components/MissionImport";
 import TodoInput from "@/components/TodoInput";
 import TripInfoBar from "@/components/TripInfoBar";
 import ArchivePage from "@/components/ArchivePage";
@@ -40,6 +41,7 @@ export default function Home() {
     toggleMission,
     updateMissionNote,
     editMission,
+    importMissions,
     deleteMission,
     newMissionId,
     missionCompletedCount,
@@ -71,6 +73,7 @@ export default function Home() {
   });
 
   const [showArchive, setShowArchive] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
 
   if (!isLoaded) {
@@ -94,6 +97,12 @@ export default function Home() {
       className="mode-container min-h-dvh flex flex-col"
       style={{ backgroundColor: "var(--mode-bg)" }}
     >
+      {showImport && (
+        <MissionImport
+          onClose={() => setShowImport(false)}
+          onImport={importMissions}
+        />
+      )}
       <UpdateToast visible={hasUpdate} onRefresh={refreshData} />
       <MergeToast visible={wasMerged} />
       <div
@@ -169,6 +178,9 @@ export default function Home() {
             departureDate={tripInfo.departureDate}
             returnDate={tripInfo.returnDate}
             newMissionId={newMissionId}
+            members={tripInfo.members}
+            onMembersChange={(members) => updateTripInfo({ members })}
+            onOpenImport={() => setShowImport(true)}
             onAdd={addMission}
             onToggle={toggleMission}
             onNoteChange={updateMissionNote}
