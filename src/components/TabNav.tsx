@@ -31,9 +31,9 @@ export default function TabNav({ currentTab, onTabChange }: TabNavProps) {
             className="flex-1 h-12 relative text-nav-link transition-colors duration-200
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
             style={{
-              color: isActive ? "var(--mode-on-accent)" : "var(--muted)",
+              color: isActive ? "var(--mode-tab-fg)" : "var(--muted)",
               fontWeight: isActive ? 800 : 500,
-              backgroundColor: isActive ? "var(--mode-accent)" : "transparent",
+              backgroundColor: isActive ? "var(--mode-tab-bg)" : "transparent",
               textTransform: "uppercase",
               fontSize: "16px",
               letterSpacing: "0.2px",
