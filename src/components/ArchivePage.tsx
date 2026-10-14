@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { ArrowLeft, MapPin, Calendar, Check, Trash2, MessageSquareQuote } from "lucide-react";
-import { ArchivedTrip, MissionItem, TripMembers } from "@/lib/types";
+import { ArchivedTrip, MissionItem, TripMember } from "@/lib/types";
 import {
   fetchArchive,
   deleteArchivedTripFromServer,
@@ -37,14 +37,16 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
 
   // 메모를 고치면 화면에 바로 반영하고, 잠시 뒤 서버에 보낸다
   const editNote = useCallback(
-    (tripId: string, missionId: string, field: "noteSon" | "noteDad", value: string) => {
+    (tripId: string, missionId: string, memberId: string, value: string) => {
       setArchives((prev) => {
         const next = prev.map((t) =>
           t.id === tripId
             ? {
                 ...t,
                 missions: (t.missions ?? []).map((m) =>
-                  m.id === missionId ? { ...m, [field]: value.slice(0, 1000) } : m
+                  m.id === missionId
+                    ? { ...m, notes: { ...m.notes, [memberId]: value.slice(0, 1000) } }
+                    : m
                 ),
               }
             : t
@@ -152,7 +154,7 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
               // 메모가 없는 카드도 보여준다 — 그때 쓴 이야기와 질문이 거기 있다
               const missions: MissionItem[] = trip.missions ?? [];
               // 아카이브마다 참여자가 다르다. 옛 기록에는 members가 없다
-              const members: TripMembers = trip.tripInfo.members ?? DEFAULT_MEMBERS;
+              const members: TripMember[] = trip.tripInfo.members ?? DEFAULT_MEMBERS;
               const notesOpen = openNotesId === trip.id;
 
               const hasDates = trip.tripInfo.departureDate && trip.tripInfo.returnDate;
@@ -288,20 +290,17 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                                 </p>
                               )}
 
-                              {([
-                                ["noteSon", members.child],
-                                ["noteDad", members.parent],
-                              ] as const).map(([field, who]) => (
-                                <label key={field} className="flex flex-col gap-[2px]">
+                              {members.map((member) => (
+                                <label key={member.id} className="flex flex-col gap-[2px]">
                                   <span
                                     className="text-caption"
                                     style={{ color: "var(--muted)", fontWeight: 700 }}
                                   >
-                                    {who} ✎
+                                    {member.name} ✎
                                   </span>
                                   <textarea
-                                    value={m[field] ?? ""}
-                                    onChange={(e) => editNote(trip.id, m.id, field, e.target.value)}
+                                    value={m.notes?.[member.id] ?? ""}
+                                    onChange={(e) => editNote(trip.id, m.id, member.id, e.target.value)}
                                     placeholder="지금이라도 떠오른 게 있으면 적어두세요"
                                     rows={2}
                                     maxLength={1000}

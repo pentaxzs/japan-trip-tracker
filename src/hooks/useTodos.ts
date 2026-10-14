@@ -264,12 +264,14 @@ export function useTodos() {
   );
 
   const updateMissionNote = useCallback(
-    (id: string, field: "noteSon" | "noteDad", note: string) => {
+    (id: string, memberId: string, note: string) => {
       if (!data) return;
       setData({
         ...data,
         missions: data.missions.map((m) =>
-          m.id === id ? { ...m, [field]: note.slice(0, 1000) } : m
+          m.id === id
+            ? { ...m, notes: { ...m.notes, [memberId]: note.slice(0, 1000) } }
+            : m
         ),
       });
     },
@@ -283,8 +285,7 @@ export function useTodos() {
       const copies: MissionItem[] = picked.map((m) => ({
         ...m,
         id: crypto.randomUUID(),
-        noteSon: "",
-        noteDad: "",
+        notes: {},
         completed: false,
         completedAt: null,
         custom: true,

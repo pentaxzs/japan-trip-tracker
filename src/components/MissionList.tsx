@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
-import { Compass, Plus, Pencil, Download } from "lucide-react";
-import { MissionItem, TripMembers } from "@/lib/types";
+import { Compass, Plus, Pencil, Download, X } from "lucide-react";
+import { MissionItem, TripMember, MAX_MEMBERS } from "@/lib/types";
 import { dayColor } from "@/constants/themes";
 import MissionCard, { MissionDraft } from "./MissionCard";
 
@@ -22,11 +22,11 @@ interface MissionListProps {
   departureDate: string | null;
   returnDate: string | null;
   newMissionId: string | null;
-  members: TripMembers;
-  onMembersChange: (members: TripMembers) => void;
+  members: TripMember[];
+  onMembersChange: (members: TripMember[]) => void;
   onOpenImport: () => void;
   onToggle: (id: string) => void;
-  onNoteChange: (id: string, field: "noteSon" | "noteDad", note: string) => void;
+  onNoteChange: (id: string, memberId: string, note: string) => void;
   onEdit: (id: string, draft: MissionDraft) => void;
   onAdd: (day: number) => void;
   onDelete: (id: string) => void;
@@ -72,91 +72,143 @@ export default function MissionList({
   onDelete,
 }: MissionListProps) {
   const days = resolveDays(missions, departureDate, returnDate);
-  const [draft, setDraft] = useState<TripMembers | null>(null);
+  const [draft, setDraft] = useState<TripMember[] | null>(null);
 
   const saveMembers = () => {
     if (!draft) return;
-    // 비우면 누구 칸인지 알 수 없어진다 — 원래 이름을 지킨다
-    onMembersChange({
-      child: draft.child.trim() || members.child,
-      parent: draft.parent.trim() || members.parent,
-    });
+    // 이름을 비운 사람은 빼고, 전부 비었으면 원래대로 둔다
+    const cleaned = draft
+      .map((m) => ({ ...m, name: m.name.trim() }))
+      .filter((m) => m.name);
+    onMembersChange(cleaned.length > 0 ? cleaned : members);
     setDraft(null);
   };
+
+  const memberEditor = draft && (
+    <div
+      className="flex flex-col gap-[8px] px-[12px] py-[12px]"
+      style={{ border: "2px solid var(--ink)", backgroundColor: "var(--canvas)" }}
+    >
+      <span className="text-caption" style={{ color: "var(--muted)", fontWeight: 700 }}>
+        이번 여행은 누구랑 (최대 {MAX_MEMBERS}명)
+      </span>
+
+      {draft.map((member, i) => (
+        <div key={member.id} className="flex items-center gap-[8px]">
+          <span
+            className="flex-shrink-0 flex items-center justify-center text-caption"
+            style={{
+              width: "24px",
+              height: "24px",
+              border: "2px solid var(--ink)",
+              backgroundColor: "var(--mode-accent)",
+              color: "var(--on-primary)",
+              fontWeight: 800,
+            }}
+          >
+            {i + 1}
+          </span>
+          <input
+            type="text"
+            value={member.name}
+            onChange={(e) =>
+              setDraft(draft.map((x) => (x.id === member.id ? { ...x, name: e.target.value } : x)))
+            }
+            placeholder="이름 (아빠, 엄마, 윤후…)"
+            aria-label={`${i + 1}번째 참여자 이름`}
+            maxLength={30}
+            className="flex-1 outline-none"
+            style={{
+              padding: "8px 10px",
+              backgroundColor: "var(--canvas)",
+              border: "2px solid var(--ink)",
+              fontSize: "16px",
+              color: "var(--ink)",
+            }}
+          />
+          {draft.length > 1 && (
+            <button
+              onClick={() => setDraft(draft.filter((x) => x.id !== member.id))}
+              aria-label={`${member.name || i + 1} 빼기`}
+              className="flex items-center justify-center flex-shrink-0"
+              style={{
+                width: "28px",
+                height: "28px",
+                borderRadius: "9999px",
+                backgroundColor: "var(--surface-strong)",
+                color: "var(--muted)",
+              }}
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
+      ))}
+
+      {draft.length < MAX_MEMBERS && (
+        <button
+          onClick={() =>
+            setDraft([...draft, { id: crypto.randomUUID(), name: "" }])
+          }
+          className="flex items-center justify-center gap-[5px] h-[40px] text-caption"
+          style={{
+            border: "2px dashed var(--ink)",
+            backgroundColor: "var(--canvas)",
+            color: "var(--ink)",
+            fontWeight: 700,
+          }}
+        >
+          <Plus size={14} strokeWidth={3} />
+          한 명 더
+        </button>
+      )}
+
+      <p className="text-caption" style={{ color: "var(--muted)" }}>
+        빼면 그 사람이 쓴 메모도 카드에서 안 보입니다
+      </p>
+
+      <div className="flex justify-end gap-[8px]">
+        <button
+          onClick={() => setDraft(null)}
+          className="px-[14px] h-[40px] text-button-md"
+          style={{ border: "2px solid var(--ink)", backgroundColor: "var(--canvas)", color: "var(--ink)" }}
+        >
+          취소
+        </button>
+        <button
+          onClick={saveMembers}
+          className="px-[14px] h-[40px] text-button-md"
+          style={{
+            border: "2px solid var(--ink)",
+            backgroundColor: "var(--mode-accent)",
+            color: "var(--on-primary)",
+            fontWeight: 700,
+          }}
+        >
+          저장
+        </button>
+      </div>
+    </div>
+  );
 
   const memberRow = (
     <div className="mb-[14px]">
       {draft ? (
-        <div
-          className="flex flex-col gap-[8px] px-[12px] py-[12px]"
-          style={{ border: "2px solid var(--ink)", backgroundColor: "var(--canvas)" }}
-        >
-          <span className="text-caption" style={{ color: "var(--muted)", fontWeight: 700 }}>
-            메모 칸에 붙을 이름
-          </span>
-          {([
-            ["child", "첫째 칸"],
-            ["parent", "둘째 칸"],
-          ] as const).map(([key, label]) => (
-            <label key={key} className="flex items-center gap-[8px]">
-              <span
-                className="text-caption flex-shrink-0"
-                style={{ color: "var(--muted)", fontWeight: 600, width: "52px" }}
-              >
-                {label}
-              </span>
-              <input
-                type="text"
-                value={draft[key]}
-                onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
-                maxLength={30}
-                className="flex-1 outline-none"
-                style={{
-                  padding: "8px 10px",
-                  backgroundColor: "var(--canvas)",
-                  border: "2px solid var(--ink)",
-                  fontSize: "16px",
-                  color: "var(--ink)",
-                }}
-              />
-            </label>
-          ))}
-          <div className="flex justify-end gap-[8px]">
-            <button
-              onClick={() => setDraft(null)}
-              className="px-[14px] h-[40px] text-button-md"
-              style={{ border: "2px solid var(--ink)", backgroundColor: "var(--canvas)", color: "var(--ink)" }}
-            >
-              취소
-            </button>
-            <button
-              onClick={saveMembers}
-              className="px-[14px] h-[40px] text-button-md"
-              style={{
-                border: "2px solid var(--ink)",
-                backgroundColor: "var(--mode-accent)",
-                color: "var(--on-primary)",
-                fontWeight: 700,
-              }}
-            >
-              저장
-            </button>
-          </div>
-        </div>
+        memberEditor
       ) : (
         <div className="flex items-center gap-[8px]">
           <button
             onClick={() => setDraft(members)}
-            className="flex items-center gap-[6px] text-caption"
+            className="flex items-center gap-[6px] text-caption min-w-0"
             style={{ color: "var(--ink)", fontWeight: 700 }}
           >
-            <Pencil size={13} strokeWidth={2} style={{ color: "var(--muted)" }} />
-            {members.child} · {members.parent}
+            <Pencil size={13} strokeWidth={2} style={{ color: "var(--muted)", flexShrink: 0 }} />
+            <span className="truncate">{members.map((m) => m.name).join(" · ")}</span>
           </button>
           <span className="flex-1" />
           <button
             onClick={onOpenImport}
-            className="flex items-center gap-[5px] px-[10px] h-[32px] text-caption"
+            className="flex items-center gap-[5px] px-[10px] h-[32px] text-caption flex-shrink-0"
             style={{
               border: "2px solid var(--ink)",
               backgroundColor: "var(--canvas)",

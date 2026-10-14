@@ -1,14 +1,18 @@
-import { JapanTripData, ArchivedTrip, MissionItem, TripMembers } from "./types";
+import { JapanTripData, ArchivedTrip, MissionItem, TripMember } from "./types";
 import {
   createDefaultTodos,
   createDefaultMissions,
   LEGACY_MOMENTS,
 } from "./templates";
 
-export const DEFAULT_MEMBERS: TripMembers = {
-  child: "아들(윤후)",
-  parent: "아빠",
-};
+/**
+ * 기본 참여자. id는 고정이다 — 여러 기기가 각자 초기화해도 같은 id가 나와야
+ * 메모가 엉키지 않는다. 새로 추가하는 참여자만 랜덤 id를 받는다.
+ */
+export const DEFAULT_MEMBERS: TripMember[] = [
+  { id: "m1", name: "아들(윤후)" },
+  { id: "m2", name: "아빠" },
+];
 
 export function createInitialData(): JapanTripData {
   const now = new Date().toISOString();
@@ -34,11 +38,41 @@ export function createInitialData(): JapanTripData {
  * - note 한 칸만 있던 구버전 → 아들/아빠 칸으로 나뉜 새 문구로 교체.
  *   직접 추가한 카드는 템플릿에 대응되는 게 없으므로 그대로 들고 간다.
  */
-/** members가 없던 데이터에 기본 이름을 채운다 */
+/**
+ * 참여자를 현재 스키마(배열)로 맞춘다.
+ * - 없던 데이터 → 기본 2명
+ * - {child, parent} 한 쌍이던 구버전 → m1/m2 두 명으로. 이름은 지킨다
+ */
 function withMembers(data: JapanTripData): JapanTripData {
-  const m = data.tripInfo?.members;
-  if (m && typeof m.child === "string" && typeof m.parent === "string") return data;
-  return { ...data, tripInfo: { ...data.tripInfo, members: DEFAULT_MEMBERS } };
+  const m = data.tripInfo?.members as unknown;
+  if (Array.isArray(m) && m.every((x) => x && typeof x.id === "string")) return data;
+
+  const legacy = m as { child?: string; parent?: string } | undefined;
+  const members: TripMember[] =
+    legacy && typeof legacy.child === "string" && typeof legacy.parent === "string"
+      ? [
+          { id: "m1", name: legacy.child },
+          { id: "m2", name: legacy.parent },
+        ]
+      : DEFAULT_MEMBERS;
+
+  return { ...data, tripInfo: { ...data.tripInfo, members } };
+}
+
+/** noteSon/noteDad 두 칸이던 메모를 참여자 id로 옮긴다 */
+function withNotes(missions: MissionItem[]): MissionItem[] {
+  if (missions.every((m) => m.notes && typeof m.notes === "object")) return missions;
+  return missions.map((m) => {
+    if (m.notes && typeof m.notes === "object") return m;
+    const legacy = m as unknown as { noteSon?: string; noteDad?: string };
+    const notes: Record<string, string> = {};
+    if (legacy.noteSon) notes.m1 = legacy.noteSon;
+    if (legacy.noteDad) notes.m2 = legacy.noteDad;
+    const next = { ...m, notes };
+    delete (next as Record<string, unknown>).noteSon;
+    delete (next as Record<string, unknown>).noteDad;
+    return next;
+  });
 }
 
 function withMissions(data: JapanTripData): JapanTripData {
@@ -48,18 +82,16 @@ function withMissions(data: JapanTripData): JapanTripData {
   }
 
   const isCurrentSchema = stored.every(
-    (m) => typeof m?.noteSon === "string" && typeof m?.noteDad === "string"
+    (m) => typeof m?.moment === "string" && typeof m?.prompt === "string"
   );
-  if (isCurrentSchema) return { ...data, missions: withDays(stored) };
+  if (isCurrentSchema) return { ...data, missions: withNotes(withDays(stored)) };
 
-  const carriedOver = stored
-    .filter((m) => m?.custom)
-    .map((m) => ({
+  const carriedOver = withNotes(
+    stored.filter((m) => m?.custom).map((m) => ({
       ...m,
-      noteSon: typeof m.noteSon === "string" ? m.noteSon : "",
-      noteDad: typeof m.noteDad === "string" ? m.noteDad : "",
       day: typeof m.day === "number" ? m.day : 1,
-    }));
+    }))
+  );
 
   return { ...data, missions: [...carriedOver, ...createDefaultMissions()] };
 }

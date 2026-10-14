@@ -42,13 +42,8 @@ export interface MissionItem {
   story: string;
   /** 둘이 같이 이야기해볼 질문 */
   prompt: string;
-  /**
-   * 메모 두 칸. 키 이름은 처음 만들 때 그대로 두었다.
-   * noteSon = 아이 칸, noteDad = 보호자 칸이고,
-   * 화면에 뜨는 이름은 tripInfo.members가 정한다 (아빠/엄마, 윤후/윤완).
-   */
-  noteSon: string;
-  noteDad: string;
+  /** 참여자 id → 그 사람이 쓴 메모. tripInfo.members가 누가 있는지 정한다 */
+  notes: Record<string, string>;
   completed: boolean;
   completedAt: string | null;
   /** 직접 추가한 카드 (기본 템플릿이 아님) */
@@ -56,20 +51,23 @@ export interface MissionItem {
   createdAt: string;
 }
 
-/** 미션 메모 두 칸에 붙는 이름 */
-export interface TripMembers {
-  /** 메모 첫째 칸 — 아이 */
-  child: string;
-  /** 메모 둘째 칸 — 보호자 */
-  parent: string;
+/** 미션 메모를 쓰는 사람 */
+export interface TripMember {
+  /** 이름을 바꿔도 메모가 따라가도록 id는 고정이다 */
+  id: string;
+  name: string;
 }
+
+/** 한 여행에 설정할 수 있는 최대 인원 */
+export const MAX_MEMBERS = 4;
 
 export interface TripInfo {
   title: string;
   destination: string;
   departureDate: string | null;
   returnDate: string | null;
-  members: TripMembers;
+  /** 1~MAX_MEMBERS명 */
+  members: TripMember[];
 }
 
 export interface WeatherData {

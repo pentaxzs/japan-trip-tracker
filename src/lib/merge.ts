@@ -67,14 +67,33 @@ export function mergeTodos(
 
 /** 내가 고쳤는지 base와 비교해 필드별로 가져오는 항목들 */
 const EDITABLE_FIELDS = [
-  "noteSon",
-  "noteDad",
   "day",
   "moment",
   "lens",
   "story",
   "prompt",
 ] as const satisfies readonly (keyof MissionItem)[];
+
+/**
+ * 메모는 참여자별로 비교한다. 내가 안 건드린 사람의 메모는 patch에 담지 않아서
+ * 서버에 있는 상대 메모가 살아남는다.
+ */
+function mergeNotes(
+  base: Record<string, string>,
+  local: Record<string, string>
+): Record<string, string> | null {
+  const changed: Record<string, string> = {};
+  let any = false;
+  for (const id of new Set([...Object.keys(base ?? {}), ...Object.keys(local ?? {})])) {
+    const b = base?.[id] ?? "";
+    const l = local?.[id] ?? "";
+    if (b !== l) {
+      changed[id] = l;
+      any = true;
+    }
+  }
+  return any ? changed : null;
+}
 
 /** 필드 하나를 base와 비교해 바뀌었으면 patch에 담는다 */
 function copyIfChanged<K extends (typeof EDITABLE_FIELDS)[number]>(
@@ -90,8 +109,8 @@ function copyIfChanged<K extends (typeof EDITABLE_FIELDS)[number]>(
 
 /**
  * 미션 3-way merge. 투두와 같은 추가/삭제/체크 규칙에 메모 변경을 더한다.
- * - 메모: 아들/아빠 칸을 따로 비교한다. 한 사람이 자기 칸만 고쳤으면
- *   상대가 같은 카드의 다른 칸에 쓴 내용은 그대로 살아남는다.
+ * - 메모: 참여자별로 따로 비교한다. 한 사람이 자기 칸만 고쳤으면
+ *   다른 사람이 같은 카드에 쓴 내용은 그대로 살아남는다.
  * - 카드 내용(제목/관점/이야기/질문)도 같은 방식으로 필드별 비교한다.
  */
 export function mergeMissions(
@@ -124,6 +143,9 @@ export function mergeMissions(
     for (const field of EDITABLE_FIELDS) {
       copyIfChanged(patch, baseItem, item, field);
     }
+
+    const notes = mergeNotes(baseItem.notes, item.notes);
+    if (notes) patch.notes = notes;
     if (Object.keys(patch).length > 0) edits.set(item.id, patch);
   }
 
@@ -131,7 +153,10 @@ export function mergeMissions(
     .filter((i) => !deleted.has(i.id))
     .map((i) => {
       const patch = edits.get(i.id);
-      return patch ? { ...i, ...patch } : i;
+      if (!patch) return i;
+      // notes는 통째로 갈아끼우면 상대 메모가 날아간다 — 바뀐 키만 덮는다
+      const notes = patch.notes ? { ...i.notes, ...patch.notes } : i.notes;
+      return { ...i, ...patch, notes };
     });
 
   return [...added, ...result];
