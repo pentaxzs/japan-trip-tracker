@@ -140,6 +140,22 @@ export async function archiveTripToServer(data: JapanTripData): Promise<void> {
   }
 }
 
+/** 아카이브된 여행의 미션 메모를 고쳐 저장한다 */
+export async function updateArchivedMissions(
+  id: string,
+  missions: MissionItem[]
+): Promise<void> {
+  try {
+    await fetch("/api/todos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "update-archive-missions", id, missions }),
+    });
+  } catch {
+    // Silently fail
+  }
+}
+
 export async function deleteArchivedTripFromServer(id: string): Promise<void> {
   try {
     await fetch("/api/todos", {

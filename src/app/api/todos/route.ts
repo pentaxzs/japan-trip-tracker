@@ -38,6 +38,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  // 아카이브된 여행의 미션만 갈아끼운다 (메모 수정). 다른 필드는 건드리지 않는다
+  if (action === "update-archive-missions") {
+    const existing =
+      (await redis.get<{ id: string; missions?: unknown }[]>(ARCHIVE_KEY)) ?? [];
+    const updated = existing.map((t) =>
+      t.id === body.id ? { ...t, missions: body.missions } : t
+    );
+    await redis.set(ARCHIVE_KEY, updated);
+    return NextResponse.json({ ok: true });
+  }
+
   if (action === "delete-archive") {
     const existing = (await redis.get<{ id: string }[]>(ARCHIVE_KEY)) ?? [];
     const filtered = existing.filter((t) => t.id !== body.id);

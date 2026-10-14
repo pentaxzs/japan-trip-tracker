@@ -1,9 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ArrowLeft, MapPin, Calendar, Check, Trash2, MessageSquareQuote } from "lucide-react";
-import { ArchivedTrip } from "@/lib/types";
-import { fetchArchive, deleteArchivedTripFromServer } from "@/lib/storage";
+import { ArchivedTrip, MissionItem, TripMembers } from "@/lib/types";
+import {
+  fetchArchive,
+  deleteArchivedTripFromServer,
+  updateArchivedMissions,
+  DEFAULT_MEMBERS,
+} from "@/lib/storage";
 import { JAPAN_CITIES } from "@/components/TripInfoBar";
 
 interface ArchivePageProps {
@@ -28,6 +33,45 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
 
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [openNotesId, setOpenNotesId] = useState<string | null>(null);
+  const saveTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  // 메모를 고치면 화면에 바로 반영하고, 잠시 뒤 서버에 보낸다
+  const editNote = useCallback(
+    (tripId: string, missionId: string, field: "noteSon" | "noteDad", value: string) => {
+      setArchives((prev) => {
+        const next = prev.map((t) =>
+          t.id === tripId
+            ? {
+                ...t,
+                missions: (t.missions ?? []).map((m) =>
+                  m.id === missionId ? { ...m, [field]: value.slice(0, 1000) } : m
+                ),
+              }
+            : t
+        );
+
+        const trip = next.find((t) => t.id === tripId);
+        const timers = saveTimers.current;
+        const pending = timers.get(tripId);
+        if (pending) clearTimeout(pending);
+        timers.set(
+          tripId,
+          setTimeout(() => {
+            if (trip?.missions) updateArchivedMissions(tripId, trip.missions);
+            timers.delete(tripId);
+          }, 600)
+        );
+
+        return next;
+      });
+    },
+    []
+  );
+
+  useEffect(() => {
+    const timers = saveTimers.current;
+    return () => timers.forEach((t) => clearTimeout(t));
+  }, []);
 
   useEffect(() => {
     fetchArchive().then(setArchives);
@@ -105,9 +149,10 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
               const doneAll = doneBefore + doneDuring + doneAfter;
 
               // v1.0 아카이브에는 missions가 없다
-              const notedMissions = (trip.missions ?? []).filter(
-                (m) => (m.noteSon ?? "").trim() || (m.noteDad ?? "").trim()
-              );
+              // 메모가 없는 카드도 보여준다 — 그때 쓴 이야기와 질문이 거기 있다
+              const missions: MissionItem[] = trip.missions ?? [];
+              // 아카이브마다 참여자가 다르다. 옛 기록에는 members가 없다
+              const members: TripMembers = trip.tripInfo.members ?? DEFAULT_MEMBERS;
               const notesOpen = openNotesId === trip.id;
 
               const hasDates = trip.tripInfo.departureDate && trip.tripInfo.returnDate;
@@ -183,8 +228,8 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                     ))}
                   </div>
 
-                  {/* 아빠와 나눈 이야기 — 미션 메모 */}
-                  {notedMissions.length > 0 && (
+                  {/* 그때의 미션 — 글은 그대로 두고 메모만 고칠 수 있다 */}
+                  {missions.length > 0 && (
                     <div className="flex flex-col gap-[8px]">
                       <button
                         onClick={() => setOpenNotesId(notesOpen ? null : trip.id)}
@@ -193,46 +238,86 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                         style={{ color: "var(--mode-accent)", fontWeight: 600 }}
                       >
                         <MessageSquareQuote size={14} />
-                        남겨둔 메모 {notedMissions.length}개
+                        미션 {missions.length}장
                         <span style={{ color: "var(--muted)" }}>
                           {notesOpen ? "닫기" : "펼치기"}
                         </span>
                       </button>
 
                       {notesOpen && (
-                        <ul className="flex flex-col gap-[8px]">
-                          {notedMissions.map((m) => (
+                        <ul className="flex flex-col gap-[10px]">
+                          {missions.map((m) => (
                             <li
                               key={m.id}
-                              className="px-[12px] py-[10px] flex flex-col gap-[4px]"
+                              className="px-[12px] py-[10px] flex flex-col gap-[6px]"
                               style={{
                                 borderRadius: "8px",
                                 backgroundColor: "var(--surface-soft)",
                               }}
                             >
                               <span
-                                className="text-caption"
+                                className="flex items-center gap-[6px] text-caption"
                                 style={{ color: "var(--muted)", fontWeight: 700 }}
                               >
-                                {m.emoji} {m.moment}
+                                {m.completed && (
+                                  <Check size={12} strokeWidth={3} style={{ color: "var(--mode-accent)" }} />
+                                )}
+                                {m.day}일차 · {m.emoji} {m.moment}
                               </span>
+
+                              {m.story && (
+                                <p
+                                  className="text-body-sm"
+                                  style={{ color: "var(--ink)", whiteSpace: "pre-wrap", opacity: 0.9 }}
+                                >
+                                  {m.story}
+                                </p>
+                              )}
+                              {m.prompt && (
+                                <p
+                                  className="text-body-sm px-[8px] py-[6px]"
+                                  style={{
+                                    color: "var(--ink)",
+                                    fontWeight: 600,
+                                    whiteSpace: "pre-wrap",
+                                    borderLeft: "3px solid var(--mode-accent)",
+                                    backgroundColor: "var(--canvas)",
+                                  }}
+                                >
+                                  {m.prompt}
+                                </p>
+                              )}
+
                               {([
-                                ["아들(윤후)", m.noteSon],
-                                ["아빠", m.noteDad],
-                              ] as const)
-                                .filter(([, note]) => (note ?? "").trim())
-                                .map(([who, note]) => (
-                                  <p
-                                    key={who}
-                                    className="text-body-sm"
-                                    style={{ color: "var(--ink)", whiteSpace: "pre-wrap" }}
+                                ["noteSon", members.child],
+                                ["noteDad", members.parent],
+                              ] as const).map(([field, who]) => (
+                                <label key={field} className="flex flex-col gap-[2px]">
+                                  <span
+                                    className="text-caption"
+                                    style={{ color: "var(--muted)", fontWeight: 700 }}
                                   >
-                                    <span style={{ color: "var(--muted)", fontWeight: 700 }}>
-                                      {who}{" "}
-                                    </span>
-                                    {note}
-                                  </p>
-                                ))}
+                                    {who} ✎
+                                  </span>
+                                  <textarea
+                                    value={m[field] ?? ""}
+                                    onChange={(e) => editNote(trip.id, m.id, field, e.target.value)}
+                                    placeholder="지금이라도 떠오른 게 있으면 적어두세요"
+                                    rows={2}
+                                    maxLength={1000}
+                                    className="w-full outline-none resize-y"
+                                    style={{
+                                      padding: "8px",
+                                      backgroundColor: "var(--canvas)",
+                                      border: "1px solid var(--hairline)",
+                                      borderRadius: "6px",
+                                      fontSize: "16px",
+                                      lineHeight: 1.5,
+                                      color: "var(--ink)",
+                                    }}
+                                  />
+                                </label>
+                              ))}
                             </li>
                           ))}
                         </ul>
