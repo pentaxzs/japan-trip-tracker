@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Pencil, Trash2 } from "lucide-react";
+import { Check, Pencil, Trash2, ChevronDown } from "lucide-react";
 import { MissionItem, TripMember } from "@/lib/types";
 
 /** 수정 가능한 필드 — 메모는 수정 모드와 무관하게 늘 쓸 수 있다 */
@@ -69,6 +69,11 @@ export default function MissionCard({
   onDelete,
 }: MissionCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  // 3명 넘어가면 카드가 화면 하나를 넘어간다 — 메모를 접어둔다
+  const collapsible = members.length > 2;
+  const [notesOpen, setNotesOpen] = useState(false);
+  const showNotes = !collapsible || notesOpen;
+  const written = members.filter((m) => (item.notes?.[m.id] ?? "").trim());
   const [draft, setDraft] = useState<MissionDraft | null>(
     autoEdit ? toDraft(item) : null
   );
@@ -345,35 +350,69 @@ export default function MissionCard({
 
             {/* 각자 쓰는 메모 — 한 사람이 다른 사람을 기록하는 게 아니라 각자 쓴다 */}
             <div className="flex flex-col gap-[8px]">
-              {members.map((member) => (
-                <label key={member.id} className="flex flex-col gap-[4px]">
-                  <span
-                    className="self-start text-caption px-[6px] py-[2px]"
+              {collapsible && (
+                <button
+                  onClick={() => setNotesOpen(!notesOpen)}
+                  aria-expanded={notesOpen}
+                  className="flex items-center gap-[6px] px-[10px] h-[40px] text-caption"
+                  style={{
+                    border: "2px solid var(--ink)",
+                    backgroundColor: notesOpen ? "var(--mode-bg-soft)" : "var(--canvas)",
+                    color: "var(--ink)",
+                    fontWeight: 700,
+                  }}
+                >
+                  <ChevronDown
+                    size={14}
+                    strokeWidth={3}
                     style={{
-                      backgroundColor: "var(--mode-accent)",
-                      color: "var(--on-primary)",
-                      fontWeight: 700,
-                    }}
-                  >
-                    {member.name} ✎
-                  </span>
-                  <textarea
-                    value={item.notes?.[member.id] ?? ""}
-                    onChange={(e) => onNoteChange(item.id, member.id, e.target.value)}
-                    placeholder="내 생각 적어두기"
-                    rows={2}
-                    maxLength={1000}
-                    className="w-full outline-none resize-y transition-colors duration-150"
-                    style={inputStyle}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "var(--mode-accent)";
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "var(--ink)";
+                      color: "inherit",
+                      transform: notesOpen ? "rotate(180deg)" : "none",
+                      transition: "transform 150ms",
                     }}
                   />
-                </label>
-              ))}
+                  메모 {written.length}/{members.length}
+                  <span
+                    className="flex-1 truncate text-left"
+                    style={{ color: "var(--muted)", fontWeight: 600 }}
+                  >
+                    {written.length > 0
+                      ? written.map((m) => m.name).join(" · ")
+                      : "아직 아무도 안 썼어요"}
+                  </span>
+                </button>
+              )}
+
+              {showNotes &&
+                members.map((member) => (
+                  <label key={member.id} className="flex flex-col gap-[4px]">
+                    <span
+                      className="self-start text-caption px-[6px] py-[2px]"
+                      style={{
+                        backgroundColor: "var(--mode-accent)",
+                        color: "var(--on-primary)",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {member.name} ✎
+                    </span>
+                    <textarea
+                      value={item.notes?.[member.id] ?? ""}
+                      onChange={(e) => onNoteChange(item.id, member.id, e.target.value)}
+                      placeholder="내 생각 적어두기"
+                      rows={2}
+                      maxLength={1000}
+                      className="w-full outline-none resize-y transition-colors duration-150"
+                      style={inputStyle}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = "var(--mode-accent)";
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = "var(--ink)";
+                      }}
+                    />
+                  </label>
+                ))}
             </div>
           </>
         )}

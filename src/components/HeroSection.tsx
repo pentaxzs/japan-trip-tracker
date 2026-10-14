@@ -54,7 +54,10 @@ export default function HeroSection({ tab, departureDate, returnDate }: HeroSect
       <div className="text-[40px] mb-[12px] inline-block" aria-hidden="true">
         {theme.heroEmoji}
       </div>
-      <h1 className="text-display-xl mb-[8px]" style={{ color: "var(--ink)" }}>
+      <h1
+        className="text-display-xl mb-[8px]"
+        style={{ color: "var(--ink)", whiteSpace: "pre-line" }}
+      >
         {theme.heroTitle}
       </h1>
       <p className="text-body-md" style={{ color: "var(--muted)" }}>
