@@ -2,6 +2,12 @@
 
 import { RefreshCw, Check } from "lucide-react";
 
+/**
+ * 탭 바(sticky top-0, 높이 51px)가 가리지 않도록 그 아래에 띄운다.
+ * z도 탭 바(z-50)보다 위여야 한다 — 같으면 DOM 순서상 탭 바가 이긴다.
+ */
+const TOAST_POSITION = "fixed top-[59px] left-1/2 -translate-x-1/2 z-[60] animate-slide-down";
+
 interface UpdateToastProps {
   visible: boolean;
   onRefresh: () => void;
@@ -12,7 +18,7 @@ export default function UpdateToast({ visible, onRefresh }: UpdateToastProps) {
 
   return (
     <div
-      className="fixed top-[16px] left-1/2 -translate-x-1/2 z-50 animate-slide-down"
+      className={TOAST_POSITION}
       style={{ width: "calc(100% - 32px)", maxWidth: "400px" }}
     >
       <div
@@ -53,7 +59,7 @@ export function MergeToast({ visible }: MergeToastProps) {
 
   return (
     <div
-      className="fixed top-[16px] left-1/2 -translate-x-1/2 z-50 animate-slide-down"
+      className={TOAST_POSITION}
       style={{ width: "calc(100% - 32px)", maxWidth: "400px" }}
     >
       <div
