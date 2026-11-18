@@ -66,6 +66,11 @@ export interface TripInfo {
   destination: string;
   departureDate: string | null;
   returnDate: string | null;
+  /**
+   * 몇 박인지. 날짜가 둘 다 있으면 날짜가 사실이고 이 값은 쓰이지 않는다.
+   * 출발일을 아직 안 정했을 때만 기간을 기억해두는 용도다.
+   */
+  nights?: number;
   /** 1~MAX_MEMBERS명 */
   members: TripMember[];
 }

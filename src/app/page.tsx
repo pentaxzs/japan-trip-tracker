@@ -5,6 +5,7 @@ import { Archive } from "lucide-react";
 import { useTodos } from "@/hooks/useTodos";
 import { useSwipeTabs } from "@/hooks/useSwipeTabs";
 import { TAB_KEYS, TabKey } from "@/constants/themes";
+import { tripNights, nightsPatch } from "@/lib/trip";
 import Header from "@/components/Header";
 import TabNav from "@/components/TabNav";
 import HeroSection from "@/components/HeroSection";
@@ -178,6 +179,8 @@ export default function Home() {
             departureDate={tripInfo.departureDate}
             returnDate={tripInfo.returnDate}
             newMissionId={newMissionId}
+            nights={tripNights(tripInfo)}
+            onNightsChange={(n) => updateTripInfo(nightsPatch(tripInfo, n))}
             members={tripInfo.members}
             onMembersChange={(members) => updateTripInfo({ members })}
             onOpenImport={() => setShowImport(true)}

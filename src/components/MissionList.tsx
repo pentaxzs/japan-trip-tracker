@@ -3,6 +3,13 @@
 import { useState, type CSSProperties } from "react";
 import { Compass, Plus, Pencil, Download, X } from "lucide-react";
 import { MissionItem, TripMember, MAX_MEMBERS } from "@/lib/types";
+import {
+  NIGHT_PRESETS,
+  MIN_NIGHTS,
+  MAX_NIGHTS,
+  nightsLabel,
+  clampNights,
+} from "@/lib/trip";
 import { dayColor } from "@/constants/themes";
 import MissionCard, { MissionDraft } from "./MissionCard";
 
@@ -22,6 +29,9 @@ interface MissionListProps {
   departureDate: string | null;
   returnDate: string | null;
   newMissionId: string | null;
+  /** 설정된 기간 (박) */
+  nights: number;
+  onNightsChange: (nights: number) => void;
   members: TripMember[];
   onMembersChange: (members: TripMember[]) => void;
   onOpenImport: () => void;
@@ -34,25 +44,12 @@ interface MissionListProps {
 
 /**
  * 보여줄 날차 목록.
- * 여행 날짜가 있으면 그 기간을, 없으면 3일을 기본으로 두고,
- * 카드가 실제로 들어있는 날차는 범위 밖이라도 빠뜨리지 않는다.
+ * 설정한 기간만큼 펼치되, 기간을 줄였을 때 범위 밖에 남은 카드가
+ * 사라지면 안 되므로 카드가 들어있는 날차는 항상 포함한다.
  */
-function resolveDays(
-  missions: MissionItem[],
-  departureDate: string | null,
-  returnDate: string | null
-): number[] {
-  let span = 3;
-  if (departureDate && returnDate) {
-    const dep = new Date(departureDate);
-    const ret = new Date(returnDate);
-    if (!Number.isNaN(dep.getTime()) && !Number.isNaN(ret.getTime())) {
-      const diff = Math.round((ret.getTime() - dep.getTime()) / 86400000) + 1;
-      if (diff >= 1) span = Math.min(diff, 14);
-    }
-  }
+function resolveDays(missions: MissionItem[], dayCount: number): number[] {
   const days = new Set<number>();
-  for (let d = 1; d <= span; d++) days.add(d);
+  for (let d = 1; d <= dayCount; d++) days.add(d);
   for (const m of missions) days.add(m.day);
   return [...days].sort((a, b) => a - b);
 }
@@ -62,6 +59,8 @@ export default function MissionList({
   departureDate,
   returnDate,
   newMissionId,
+  nights,
+  onNightsChange,
   members,
   onMembersChange,
   onOpenImport,
@@ -71,7 +70,7 @@ export default function MissionList({
   onAdd,
   onDelete,
 }: MissionListProps) {
-  const days = resolveDays(missions, departureDate, returnDate);
+  const days = resolveDays(missions, nights + 1);
   const [draft, setDraft] = useState<TripMember[] | null>(null);
 
   const saveMembers = () => {
@@ -191,6 +190,111 @@ export default function MissionList({
     </div>
   );
 
+  const [customOpen, setCustomOpen] = useState(false);
+  const [customNights, setCustomNights] = useState(String(nights));
+
+  const applyCustom = () => {
+    const parsed = Number(customNights);
+    if (Number.isFinite(parsed)) onNightsChange(clampNights(parsed));
+    setCustomOpen(false);
+  };
+
+  const durationRow = (
+    <div className="mb-[14px] flex flex-col gap-[6px]">
+      <span className="text-caption" style={{ color: "var(--muted)", fontWeight: 700 }}>
+        기간 · {nightsLabel(nights)}
+      </span>
+      <div className="flex flex-wrap gap-[6px]">
+        {NIGHT_PRESETS.map((n) => {
+          const active = n === nights && !customOpen;
+          return (
+            <button
+              key={n}
+              onClick={() => {
+                setCustomOpen(false);
+                onNightsChange(n);
+              }}
+              aria-pressed={active}
+              className="flex-1 h-[36px] text-caption"
+              style={{
+                minWidth: "62px",
+                border: "2px solid var(--ink)",
+                backgroundColor: active ? "var(--mode-accent)" : "var(--canvas)",
+                color: active ? "var(--on-primary)" : "var(--ink)",
+                fontWeight: 700,
+              }}
+            >
+              {nightsLabel(n)}
+            </button>
+          );
+        })}
+        <button
+          onClick={() => {
+            setCustomNights(String(nights));
+            setCustomOpen(!customOpen);
+          }}
+          aria-pressed={customOpen || !NIGHT_PRESETS.includes(nights)}
+          className="flex-1 h-[36px] text-caption"
+          style={{
+            minWidth: "62px",
+            border: "2px solid var(--ink)",
+            backgroundColor:
+              customOpen || !NIGHT_PRESETS.includes(nights)
+                ? "var(--mode-accent)"
+                : "var(--canvas)",
+            color:
+              customOpen || !NIGHT_PRESETS.includes(nights)
+                ? "var(--on-primary)"
+                : "var(--ink)",
+            fontWeight: 700,
+          }}
+        >
+          직접 입력
+        </button>
+      </div>
+
+      {customOpen && (
+        <div className="flex items-center gap-[8px]">
+          <input
+            type="number"
+            inputMode="numeric"
+            value={customNights}
+            onChange={(e) => setCustomNights(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && applyCustom()}
+            min={MIN_NIGHTS}
+            max={MAX_NIGHTS}
+            aria-label="몇 박인지 입력"
+            className="outline-none"
+            style={{
+              width: "72px",
+              padding: "8px 10px",
+              backgroundColor: "var(--canvas)",
+              border: "2px solid var(--ink)",
+              fontSize: "16px",
+              color: "var(--ink)",
+            }}
+          />
+          <span className="text-caption" style={{ color: "var(--muted)", fontWeight: 600 }}>
+            박 ({MIN_NIGHTS}~{MAX_NIGHTS})
+          </span>
+          <span className="flex-1" />
+          <button
+            onClick={applyCustom}
+            className="px-[14px] h-[36px] text-caption"
+            style={{
+              border: "2px solid var(--ink)",
+              backgroundColor: "var(--mode-accent)",
+              color: "var(--on-primary)",
+              fontWeight: 700,
+            }}
+          >
+            적용
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
   const memberRow = (
     <div className="mb-[14px]">
       {draft ? (
@@ -282,6 +386,7 @@ export default function MissionList({
       </div>
 
       {memberRow}
+      {durationRow}
 
       {days.map((day) => {
         const items = missions.filter((m) => m.day === day);
