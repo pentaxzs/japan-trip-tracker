@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 
-import { MapPin, Calendar, Cloud } from "lucide-react";
+import { Calendar, Cloud, Archive } from "lucide-react";
 import { WeatherData } from "@/lib/types";
 
 export const JAPAN_CITIES = [
@@ -53,6 +53,8 @@ interface TripInfoBarProps {
   onDestinationChange: (dest: string) => void;
   onDepartureDateChange: (date: string | null) => void;
   onReturnDateChange: (date: string | null) => void;
+  /** 헤더를 없애면서 아카이브 진입을 이 줄로 옮겼다 */
+  onOpenArchive?: () => void;
 }
 
 export default function TripInfoBar({
@@ -62,6 +64,7 @@ export default function TripInfoBar({
   onDestinationChange,
   onDepartureDateChange,
   onReturnDateChange,
+  onOpenArchive,
 }: TripInfoBarProps) {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
@@ -104,20 +107,17 @@ export default function TripInfoBar({
 
   return (
     <div
-      className="px-[16px] py-[12px] flex flex-col gap-[10px]"
-      style={{
-        backgroundColor: "var(--canvas)",
-        borderBottom: "3px solid var(--ink)",
-      }}
+      className="px-[16px] pt-[16px] pb-[10px] flex flex-col gap-[6px]"
+      style={{ backgroundColor: "var(--paper)" }}
     >
-      {/* Row 1: Destination + Weather */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-[8px]">
-          <MapPin size={16} style={{ color: "var(--mode-accent)" }} />
+      {/* 1행 — 도시 · 날씨 · 아카이브 */}
+      <div className="flex items-center gap-[8px]">
+        <div className="flex items-center gap-[2px] min-w-0">
           <select
             value={destination}
             onChange={(e) => onDestinationChange(e.target.value)}
-            className="text-title-md bg-transparent border-none outline-none cursor-pointer"
+            aria-label="여행지"
+            className="text-display-sm bg-transparent border-none outline-none cursor-pointer -ml-[2px]"
             style={{ color: "var(--ink)" }}
           >
             {JAPAN_CITIES.map((c) => (
@@ -128,83 +128,90 @@ export default function TripInfoBar({
           </select>
         </div>
 
-        {/* Today's Weather */}
-        <div className="flex items-center gap-[6px]">
-          <span className="text-caption" style={{ color: "var(--muted)" }}>
-            오늘의 {city.label} 날씨
-          </span>
+        <span className="flex-1" />
+
+        <div className="flex items-center gap-[4px]">
           {weatherLoading ? (
-            <span className="text-caption" style={{ color: "var(--muted)" }}>
-              ...
+            <span className="text-caption-sm" style={{ color: "var(--muted)" }}>
+              …
             </span>
           ) : weather ? (
             <>
-              <span className="text-base">{weather.icon}</span>
-              <span className="text-title-md" style={{ color: "var(--ink)" }}>
-                {weather.temp}°C
+              <span className="text-caption-sm" aria-hidden="true">
+                {weather.icon}
+              </span>
+              <span className="text-caption" style={{ color: "var(--muted)" }}>
+                {weather.temp}°
               </span>
             </>
           ) : (
-            <Cloud size={16} style={{ color: "var(--muted)" }} />
+            <Cloud size={14} style={{ color: "var(--muted)" }} aria-label="날씨 정보 없음" />
           )}
         </div>
+
+        {onOpenArchive && (
+          <button
+            onClick={onOpenArchive}
+            aria-label="여행 아카이브"
+            className="flex items-center justify-center flex-shrink-0 ml-[2px]"
+            style={{ width: "30px", height: "30px", color: "var(--muted)" }}
+          >
+            <Archive size={17} strokeWidth={2} />
+          </button>
+        )}
       </div>
 
-      {/* Row 2: Date Range + Duration */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-[4px]">
-          {/* Departure: 날짜(요일)📅 */}
-          <div
-            className="relative flex items-center gap-[2px] cursor-pointer"
-            onClick={() => depRef.current?.showPicker?.()}
-          >
-            <input
-              ref={depRef}
-              type="date"
-              value={departureDate ?? ""}
-              onChange={(e) => onDepartureDateChange(e.target.value || null)}
-              className="date-input absolute inset-0 opacity-0 cursor-pointer"
-              style={{ width: "100%", height: "100%" }}
-            />
-            <span className="text-body-sm" style={{ color: departureDate ? "var(--ink)" : "var(--muted)" }}>
-              {departureDate ? `${departureDate.replace(/-/g, ".")}(${getWeekday(departureDate)})` : "출발일"}
-            </span>
-            <Calendar size={14} style={{ color: "var(--muted)" }} />
-          </div>
+      {/* 2행 — 날짜와 기간. 눌러서 고친다 */}
+      <div className="flex items-center gap-[5px] text-caption" style={{ color: "var(--muted)" }}>
+        <button
+          type="button"
+          onClick={() => depRef.current?.showPicker?.()}
+          className="relative flex items-center gap-[3px]"
+          style={{ color: departureDate ? "var(--muted)" : "var(--ink)" }}
+        >
+          <input
+            ref={depRef}
+            type="date"
+            value={departureDate ?? ""}
+            onChange={(e) => onDepartureDateChange(e.target.value || null)}
+            aria-label="출발일"
+            className="date-input absolute inset-0 opacity-0 cursor-pointer"
+            style={{ width: "100%", height: "100%" }}
+          />
+          {departureDate
+            ? `${departureDate.slice(5).replace("-", ".")}(${getWeekday(departureDate)})`
+            : "출발일"}
+          {!departureDate && <Calendar size={13} />}
+        </button>
 
-          <span className="text-caption" style={{ color: "var(--muted)" }}>→</span>
+        <span aria-hidden="true">–</span>
 
-          {/* Return: 날짜(요일)📅 */}
-          <div
-            className="relative flex items-center gap-[2px] cursor-pointer"
-            onClick={() => retRef.current?.showPicker?.()}
-          >
-            <input
-              ref={retRef}
-              type="date"
-              value={returnDate ?? ""}
-              onChange={(e) => onReturnDateChange(e.target.value || null)}
-              className="date-input absolute inset-0 opacity-0 cursor-pointer"
-              style={{ width: "100%", height: "100%" }}
-            />
-            <span className="text-body-sm" style={{ color: returnDate ? "var(--ink)" : "var(--muted)" }}>
-              {returnDate ? `${returnDate.replace(/-/g, ".")}(${getWeekday(returnDate)})` : "귀국일"}
-            </span>
-            <Calendar size={14} style={{ color: "var(--muted)" }} />
-          </div>
-        </div>
+        <button
+          type="button"
+          onClick={() => retRef.current?.showPicker?.()}
+          className="relative flex items-center gap-[3px]"
+          style={{ color: returnDate ? "var(--muted)" : "var(--ink)" }}
+        >
+          <input
+            ref={retRef}
+            type="date"
+            value={returnDate ?? ""}
+            onChange={(e) => onReturnDateChange(e.target.value || null)}
+            aria-label="귀국일"
+            className="date-input absolute inset-0 opacity-0 cursor-pointer"
+            style={{ width: "100%", height: "100%" }}
+          />
+          {returnDate
+            ? `${returnDate.slice(5).replace("-", ".")}(${getWeekday(returnDate)})`
+            : "귀국일"}
+          {!returnDate && <Calendar size={13} />}
+        </button>
+
         {duration && (
-          <span
-            className="text-caption px-[8px] py-[2px]"
-            style={{
-              color: "var(--mode-accent)",
-              backgroundColor: "var(--surface-strong)",
-              borderRadius: "9999px",
-              fontWeight: 600,
-            }}
-          >
-            {duration}
-          </span>
+          <>
+            <span aria-hidden="true">·</span>
+            <span>{duration}</span>
+          </>
         )}
       </div>
     </div>

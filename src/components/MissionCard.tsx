@@ -21,11 +21,24 @@ const EDIT_FIELDS: {
   { field: "prompt", label: "질문", placeholder: "같이 이야기해볼 질문", multiline: true },
 ];
 
+/** 수정 모드의 입력 — 테두리가 있는 네모 */
 const inputStyle = {
   width: "100%",
-  padding: "10px",
+  padding: "9px 10px",
   backgroundColor: "var(--canvas)",
-  border: "2px solid var(--ink)",
+  border: "2.5px solid var(--ink)",
+  fontSize: "16px",
+  lineHeight: 1.5,
+  color: "var(--ink)",
+} as const;
+
+/** 메모 — 흰 본문 안이라 밑줄만 둔다. 테두리를 또 치면 카드가 액자가 된다 */
+const noteStyle = {
+  width: "100%",
+  padding: "5px 0 7px",
+  backgroundColor: "transparent",
+  border: "0",
+  borderBottom: "2px solid var(--hairline)",
   fontSize: "16px",
   lineHeight: 1.5,
   color: "var(--ink)",
@@ -99,32 +112,34 @@ export default function MissionCard({
         isDeleting ? "todo-item-exit" : ""
       }`}
       style={{
-        backgroundColor: item.completed
-          ? "var(--mode-complete-bg)"
-          : "var(--canvas)",
-        border: "3px solid var(--ink)",
-        boxShadow: "4px 4px 0 var(--ink)",
+        backgroundColor: "var(--canvas)",
+        border: "var(--border-w) solid var(--ink)",
+        boxShadow: "var(--shadow-hard)",
       }}
     >
-      {/* 머리말 — 순서 · 순간 이름 · 체크 · 수정 */}
+      {/* 머리말 — 날차 색면. 완료하면 채도를 빼서 지나간 것으로 보이게 한다 */}
       <div
-        className="flex items-center gap-[10px] px-[14px] py-[10px]"
-        style={{ borderBottom: "3px solid var(--ink)" }}
+        className="flex flex-col gap-[7px] px-[13px] pt-[11px] pb-[12px]"
+        style={{
+          backgroundColor: "var(--mode-accent)",
+          borderBottom: "var(--border-w) solid var(--ink)",
+          filter: item.completed ? "saturate(0.2) brightness(1.25)" : undefined,
+        }}
       >
+      <div className="flex items-center gap-[9px]">
         <span
-          className="flex-shrink-0 flex items-center justify-center text-caption"
+          className="flex-shrink-0 flex items-center justify-center text-badge"
           style={{
-            width: "26px",
-            height: "26px",
-            backgroundColor: "var(--mode-accent)",
-            color: "var(--on-primary)",
-            border: "2px solid var(--ink)",
-            fontWeight: 800,
+            width: "23px",
+            height: "23px",
+            backgroundColor: "var(--accent)",
+            color: "var(--ink)",
+            border: "2.5px solid var(--ink)",
           }}
         >
           {index + 1}
         </span>
-        <span className="text-[20px] leading-none" aria-hidden="true">
+        <span className="text-[19px] leading-none" aria-hidden="true">
           {item.emoji}
         </span>
 
@@ -140,15 +155,7 @@ export default function MissionCard({
           />
         ) : (
           <>
-            <h3
-              className="flex-1 text-title-sm"
-              style={{
-                color: item.completed
-                  ? "var(--mode-complete-text)"
-                  : "var(--ink)",
-                fontWeight: 800,
-              }}
-            >
+            <h3 className="flex-1 text-title-sm" style={{ color: "var(--on-primary)" }}>
               {item.moment}
             </h3>
 
@@ -164,14 +171,14 @@ export default function MissionCard({
               className="w-6 h-6 flex-shrink-0 flex items-center justify-center transition-all duration-150
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               style={{
-                backgroundColor: item.completed
-                  ? "var(--mode-accent)"
-                  : "var(--canvas)",
-                border: "2px solid var(--ink)",
+                width: "20px",
+                height: "20px",
+                backgroundColor: "var(--canvas)",
+                border: "2.5px solid var(--ink)",
               }}
             >
               {item.completed && (
-                <Check size={14} strokeWidth={3} style={{ color: "var(--on-primary)" }} />
+                <Check size={13} strokeWidth={3.5} style={{ color: "var(--ink)" }} />
               )}
             </button>
 
@@ -181,20 +188,26 @@ export default function MissionCard({
               className="flex items-center justify-center transition-all duration-150
                 opacity-100 sm:opacity-0 sm:hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none"
               style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "9999px",
-                backgroundColor: "var(--surface-strong)",
-                color: "var(--muted)",
+                width: "26px",
+                height: "26px",
+                color: "var(--on-primary)",
+                opacity: 0.85,
               }}
             >
-              <Pencil size={14} strokeWidth={1.5} style={{ color: "inherit" }} />
+              <Pencil size={15} strokeWidth={2.2} style={{ color: "inherit" }} />
             </button>
           </>
         )}
       </div>
 
-      <div className="flex flex-col gap-[10px] px-[14px] py-[12px]">
+      {!isEditing && item.lens && (
+        <p className="text-caption-sm" style={{ color: "var(--on-primary)", opacity: 0.88 }}>
+          {item.lens}
+        </p>
+      )}
+      </div>
+
+      <div className="flex flex-col gap-[10px] px-[13px] py-[13px]">
         {isEditing ? (
           <>
             <div className="flex flex-col gap-[4px]">
@@ -306,26 +319,11 @@ export default function MissionCard({
           </>
         ) : (
           <>
-            {/* 관점 — 이 순간에 남길 한 줄 */}
-            {item.lens && (
-              <span
-                className="self-start text-caption px-[8px] py-[3px]"
-                style={{
-                  backgroundColor: "var(--mode-accent-light)",
-                  border: "2px solid var(--ink)",
-                  color: "var(--ink)",
-                  fontWeight: 700,
-                }}
-              >
-                {item.lens}
-              </span>
-            )}
-
             {/* 이 순간에 깔아두는 이야기 */}
             {item.story && (
               <p
                 className="text-body-md"
-                style={{ color: "var(--ink)", lineHeight: 1.6, whiteSpace: "pre-wrap" }}
+                style={{ color: "var(--body-text)", whiteSpace: "pre-wrap" }}
               >
                 {item.story}
               </p>
@@ -334,13 +332,12 @@ export default function MissionCard({
             {/* 둘이 같이 이야기해볼 질문 */}
             {item.prompt && (
               <p
-                className="text-body-md px-[10px] py-[8px]"
+                className="text-body-md pl-[11px]"
                 style={{
-                  backgroundColor: "var(--mode-bg-soft)",
                   borderLeft: "4px solid var(--mode-accent)",
                   color: "var(--ink)",
-                  fontWeight: 600,
-                  lineHeight: 1.6,
+                  fontWeight: 800,
+                  lineHeight: 1.55,
                   whiteSpace: "pre-wrap",
                 }}
               >
@@ -356,10 +353,10 @@ export default function MissionCard({
                   aria-expanded={notesOpen}
                   className="flex items-center gap-[6px] px-[10px] h-[40px] text-caption"
                   style={{
-                    border: "2px solid var(--ink)",
-                    backgroundColor: notesOpen ? "var(--mode-bg-soft)" : "var(--canvas)",
+                    borderTop: "1px solid var(--hairline)",
+                    paddingTop: "10px",
+                    backgroundColor: "transparent",
                     color: "var(--ink)",
-                    fontWeight: 700,
                   }}
                 >
                   <ChevronDown
@@ -385,16 +382,9 @@ export default function MissionCard({
 
               {showNotes &&
                 members.map((member) => (
-                  <label key={member.id} className="flex flex-col gap-[4px]">
-                    <span
-                      className="self-start text-caption px-[6px] py-[2px]"
-                      style={{
-                        backgroundColor: "var(--mode-accent)",
-                        color: "var(--on-primary)",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {member.name} ✎
+                  <label key={member.id} className="flex flex-col gap-[1px]">
+                    <span className="text-caption" style={{ color: "var(--mode-accent)" }}>
+                      {member.name}
                     </span>
                     <textarea
                       value={item.notes?.[member.id] ?? ""}
@@ -403,12 +393,12 @@ export default function MissionCard({
                       rows={2}
                       maxLength={1000}
                       className="w-full outline-none resize-y transition-colors duration-150"
-                      style={inputStyle}
+                      style={noteStyle}
                       onFocus={(e) => {
-                        e.currentTarget.style.borderColor = "var(--mode-accent)";
+                        e.currentTarget.style.borderBottomColor = "var(--mode-accent)";
                       }}
                       onBlur={(e) => {
-                        e.currentTarget.style.borderColor = "var(--ink)";
+                        e.currentTarget.style.borderBottomColor = "var(--hairline)";
                       }}
                     />
                   </label>

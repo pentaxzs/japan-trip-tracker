@@ -92,7 +92,7 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
     <div
       data-mode="after"
       className="mode-container min-h-dvh flex flex-col"
-      style={{ backgroundColor: "var(--canvas)" }}
+      style={{ backgroundColor: "var(--paper)" }}
     >
       <div className="w-full max-w-[480px] mx-auto flex flex-col min-h-dvh">
         {/* Header */}
@@ -106,8 +106,6 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
             style={{
               width: "32px",
               height: "32px",
-              borderRadius: "9999px",
-              backgroundColor: "var(--surface-strong)",
               color: "var(--ink)",
             }}
             aria-label="뒤로가기"
@@ -165,10 +163,10 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
               return (
                 <div
                   key={trip.id}
-                  className="p-[16px] flex flex-col gap-[12px]"
+                  className="p-[15px] flex flex-col gap-[12px]"
                   style={{
-                    borderRadius: "14px",
-                    border: "1px solid var(--hairline)",
+                    border: "var(--border-w) solid var(--ink)",
+                    boxShadow: "var(--shadow-hard)",
                     backgroundColor: "var(--canvas)",
                   }}
                 >
@@ -182,12 +180,11 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                     </div>
                     {duration && (
                       <span
-                        className="text-caption px-[8px] py-[2px]"
+                        className="text-badge px-[8px] py-[3px]"
                         style={{
-                          color: "var(--mode-accent)",
-                          backgroundColor: "var(--surface-strong)",
-                          borderRadius: "9999px",
-                          fontWeight: 600,
+                          color: "var(--ink)",
+                          backgroundColor: "var(--accent)",
+                          border: "2.5px solid var(--ink)",
                         }}
                       >
                         {duration}
@@ -214,10 +211,10 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                     ].map((stat) => (
                       <div
                         key={stat.label}
-                        className="flex-1 py-[8px] text-center"
+                        className="flex-1 py-[9px] text-center"
                         style={{
-                          borderRadius: "8px",
-                          backgroundColor: "var(--surface-soft)",
+                          backgroundColor: "var(--surface-strong)",
+                          border: "2px solid var(--ink)",
                         }}
                       >
                         <div className="text-caption" style={{ color: "var(--muted)" }}>
@@ -251,10 +248,10 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                           {missions.map((m) => (
                             <li
                               key={m.id}
-                              className="px-[12px] py-[10px] flex flex-col gap-[6px]"
+                              className="px-[12px] py-[11px] flex flex-col gap-[6px]"
                               style={{
-                                borderRadius: "8px",
                                 backgroundColor: "var(--surface-soft)",
+                                border: "2px solid var(--hairline)",
                               }}
                             >
                               <span
@@ -282,7 +279,7 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                                     color: "var(--ink)",
                                     fontWeight: 600,
                                     whiteSpace: "pre-wrap",
-                                    borderLeft: "3px solid var(--mode-accent)",
+                                    borderLeft: "3px solid var(--ink)",
                                     backgroundColor: "var(--canvas)",
                                   }}
                                 >
@@ -308,8 +305,7 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                                     style={{
                                       padding: "8px",
                                       backgroundColor: "var(--canvas)",
-                                      border: "1px solid var(--hairline)",
-                                      borderRadius: "6px",
+                                      border: "2px solid var(--hairline)",
                                       fontSize: "16px",
                                       lineHeight: 1.5,
                                       color: "var(--ink)",
@@ -342,9 +338,9 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                             onClick={() => handleDelete(trip.id)}
                             className="text-caption px-[8px] py-[2px]"
                             style={{
-                              borderRadius: "4px",
-                              backgroundColor: "#c13515",
-                              color: "#ffffff",
+                              backgroundColor: "var(--error)",
+                              color: "var(--on-primary)",
+                              border: "2px solid var(--ink)",
                             }}
                           >
                             삭제
@@ -353,9 +349,8 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                             onClick={() => setDeleteConfirmId(null)}
                             className="text-caption px-[8px] py-[2px]"
                             style={{
-                              borderRadius: "4px",
-                              border: "1px solid var(--hairline)",
-                              color: "var(--muted)",
+                              border: "2px solid var(--ink)",
+                              color: "var(--ink)",
                             }}
                           >
                             취소
@@ -368,9 +363,7 @@ export default function ArchivePage({ onBack }: ArchivePageProps) {
                           style={{
                             width: "28px",
                             height: "28px",
-                            borderRadius: "9999px",
-                            backgroundColor: "var(--surface-strong)",
-                            color: "var(--muted)",
+                            color: "var(--muted-soft)",
                           }}
                           aria-label="아카이브 삭제"
                         >

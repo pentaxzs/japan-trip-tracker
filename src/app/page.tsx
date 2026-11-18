@@ -1,12 +1,10 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { Archive } from "lucide-react";
 import { useTodos } from "@/hooks/useTodos";
 import { useSwipeTabs } from "@/hooks/useSwipeTabs";
 import { TAB_KEYS, TabKey } from "@/constants/themes";
 import { tripNights, nightsPatch } from "@/lib/trip";
-import Header from "@/components/Header";
 import TabNav from "@/components/TabNav";
 import HeroSection from "@/components/HeroSection";
 import ProgressBar from "@/components/ProgressBar";
@@ -109,28 +107,9 @@ export default function Home() {
       <div
         {...swipe}
         className="w-full max-w-[520px] md:max-w-[640px] mx-auto flex flex-col min-h-dvh overflow-x-clip px-0 md:my-[24px] md:min-h-0 md:border-x-[3px] md:border-b-[3px] md:border-[var(--ink)]"
-        style={{ backgroundColor: "var(--canvas)" }}
+        style={{ backgroundColor: "var(--paper)" }}
       >
-        {/* Header — with archive button */}
-        <div className="relative">
-          <Header />
-          <button
-            onClick={() => setShowArchive(true)}
-            className="absolute right-[16px] top-1/2 -translate-y-1/2 flex items-center justify-center"
-            style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "9999px",
-              backgroundColor: "var(--surface-strong)",
-              color: "var(--muted)",
-            }}
-            aria-label="여행 아카이브"
-          >
-            <Archive size={16} />
-          </button>
-        </div>
-
-        {/* Trip Info — destination, dates, weather */}
+        {/* 상단 — 도시 · 날짜 · 날씨 · 아카이브 한 덩어리 */}
         <TripInfoBar
           destination={tripInfo.destination}
           departureDate={tripInfo.departureDate}
@@ -138,6 +117,7 @@ export default function Home() {
           onDestinationChange={(dest) => updateTripInfo({ destination: dest })}
           onDepartureDateChange={(date) => updateTripInfo({ departureDate: date })}
           onReturnDateChange={(date) => updateTripInfo({ returnDate: date })}
+          onOpenArchive={() => setShowArchive(true)}
         />
 
         {/* Tab Navigation — 48px fixed, Airbnb nav-link style */}
@@ -151,20 +131,17 @@ export default function Home() {
             enterFrom === 1 ? "tab-enter-right" : "tab-enter-left"
           }`}
         >
-        {/* Hero Section — gradient background */}
-        <div
-          className="w-full"
-          style={{ backgroundImage: "var(--mode-hero-gradient)" }}
-        >
+        {/* 히어로 — 미션 탭은 날차 띠가 바로 나와야 해서 뺀다 */}
+        {!isMission && (
           <HeroSection
             tab={tab}
             departureDate={tripInfo.departureDate}
             returnDate={tripInfo.returnDate}
           />
-        </div>
+        )}
 
-        {/* Progress Bar */}
-        <div className="py-[8px]">
+        {/* 진행률 */}
+        <div className={isMission ? "pt-[10px] pb-[6px]" : "py-[6px]"}>
           <ProgressBar
             completedCount={isMission ? missionCompletedCount : completedCount}
             totalCount={isMission ? missionTotalCount : totalCount}
@@ -177,7 +154,6 @@ export default function Home() {
           <MissionList
             missions={missions}
             departureDate={tripInfo.departureDate}
-            returnDate={tripInfo.returnDate}
             newMissionId={newMissionId}
             nights={tripNights(tripInfo)}
             onNightsChange={(n) => updateTripInfo(nightsPatch(tripInfo, n))}

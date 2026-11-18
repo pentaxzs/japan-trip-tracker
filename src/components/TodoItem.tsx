@@ -49,11 +49,8 @@ export default function TodoItemComponent({
         ${isDeleting ? "todo-item-exit" : ""}
       `}
       style={{
-        borderRadius: "0px",
-        backgroundColor: item.completed
-          ? "var(--mode-complete-bg)"
-          : "var(--canvas)",
-        borderBottom: "2px solid var(--ink)",
+        backgroundColor: "var(--canvas)",
+        borderBottom: "1px solid var(--hairline)",
       }}
     >
       {/* Checkbox — 24x24, rounded-sm (8px) per Airbnb spec */}
@@ -70,13 +67,10 @@ export default function TodoItemComponent({
           ${justChecked ? "animate-check-pop" : ""}
         `}
         style={{
-          borderRadius: "0px",
-          backgroundColor: item.completed
-            ? "var(--mode-accent)"
-            : "var(--canvas)",
-          borderWidth: "2px",
+          backgroundColor: item.completed ? "var(--ink)" : "var(--canvas)",
+          borderWidth: "2.5px",
           borderStyle: "solid",
-          borderColor: "var(--ink)",
+          borderColor: item.completed ? "var(--ink)" : "var(--border-strong)",
         }}
       >
         {item.completed && (
@@ -91,9 +85,7 @@ export default function TodoItemComponent({
           ${item.completed ? "line-through" : ""}
         `}
         style={{
-          color: item.completed
-            ? "var(--mode-complete-text)"
-            : "var(--ink)",
+          color: item.completed ? "var(--muted-soft)" : "var(--ink)",
         }}
       >
         {item.text}
@@ -110,11 +102,9 @@ export default function TodoItemComponent({
           focus-visible:opacity-100 focus-visible:outline-none
         "
         style={{
-          width: "32px",
-          height: "32px",
-          borderRadius: "9999px",
-          backgroundColor: "var(--surface-strong)",
-          color: "var(--muted)",
+          width: "30px",
+          height: "30px",
+          color: "var(--muted-soft)",
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.color = "var(--error)";
@@ -123,7 +113,7 @@ export default function TodoItemComponent({
           e.currentTarget.style.color = "var(--muted)";
         }}
       >
-        <Trash2 size={16} strokeWidth={1.5} style={{ color: "inherit" }} />
+        <Trash2 size={16} strokeWidth={2} style={{ color: "inherit" }} />
       </button>
     </div>
   );

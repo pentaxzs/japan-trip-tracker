@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: 'Inter', 'Noto Sans KR', -apple-system, system-ui, Roboto, 'Helvetica Neue', sans-serif;
+  /* Pretendard 하나로 통일. public/fonts/pretendard 에서 직접 서빙한다 */
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 
   /* ----------------------------------------------------------------
    * Colors — Airbnb core palette (from DESIGN.md)
@@ -45,64 +45,74 @@
    * Typography Scale — Airbnb DESIGN.md exact values
    * Inter as open-source substitute for Airbnb Cereal VF
    * ---------------------------------------------------------------- */
-  --text-display-xl: 28px;
-  --text-display-xl--line-height: 1.43;
-  --text-display-xl--letter-spacing: 0;
-  --text-display-xl--font-weight: 700;
+  --text-display-xl: 26px;
+  --text-display-xl--line-height: 1.25;
+  --text-display-xl--letter-spacing: -0.03em;
+  --text-display-xl--font-weight: 900;
 
   --text-display-lg: 22px;
-  --text-display-lg--line-height: 1.18;
-  --text-display-lg--letter-spacing: -0.44px;
-  --text-display-lg--font-weight: 500;
+  --text-display-lg--line-height: 1.2;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 800;
 
-  --text-display-md: 21px;
-  --text-display-md--line-height: 1.43;
-  --text-display-md--letter-spacing: 0;
-  --text-display-md--font-weight: 700;
+  --text-display-md: 20px;
+  --text-display-md--line-height: 1.3;
+  --text-display-md--letter-spacing: -0.02em;
+  --text-display-md--font-weight: 800;
 
-  --text-display-sm: 20px;
-  --text-display-sm--line-height: 1.20;
-  --text-display-sm--letter-spacing: -0.18px;
-  --text-display-sm--font-weight: 600;
+  --text-display-sm: 18px;
+  --text-display-sm--line-height: 1.3;
+  --text-display-sm--letter-spacing: -0.02em;
+  --text-display-sm--font-weight: 800;
 
-  --text-title-md: 16px;
-  --text-title-md--line-height: 1.25;
-  --text-title-md--font-weight: 600;
+  --text-title-md: 16.5px;
+  --text-title-md--line-height: 1.3;
+  --text-title-md--letter-spacing: -0.01em;
+  --text-title-md--font-weight: 800;
 
-  --text-title-sm: 16px;
-  --text-title-sm--line-height: 1.25;
-  --text-title-sm--font-weight: 500;
+  --text-title-sm: 15.5px;
+  --text-title-sm--line-height: 1.35;
+  --text-title-sm--letter-spacing: -0.01em;
+  --text-title-sm--font-weight: 700;
 
-  --text-body-md: 16px;
-  --text-body-md--line-height: 1.5;
+  --text-body-md: 15px;
+  --text-body-md--line-height: 1.7;
+  --text-body-md--letter-spacing: 0;
   --text-body-md--font-weight: 400;
 
-  --text-body-sm: 14px;
-  --text-body-sm--line-height: 1.43;
+  --text-body-sm: 13.5px;
+  --text-body-sm--line-height: 1.6;
+  --text-body-sm--letter-spacing: 0;
   --text-body-sm--font-weight: 400;
 
-  --text-caption: 14px;
-  --text-caption--line-height: 1.29;
-  --text-caption--font-weight: 500;
+  --text-caption: 12px;
+  --text-caption--line-height: 1.35;
+  --text-caption--letter-spacing: 0;
+  --text-caption--font-weight: 700;
 
-  --text-caption-sm: 13px;
-  --text-caption-sm--line-height: 1.23;
-  --text-caption-sm--font-weight: 400;
+  --text-caption-sm: 11px;
+  --text-caption-sm--line-height: 1.3;
+  --text-caption-sm--letter-spacing: 0;
+  --text-caption-sm--font-weight: 600;
 
   --text-badge: 11px;
-  --text-badge--line-height: 1.18;
-  --text-badge--font-weight: 600;
+  --text-badge--line-height: 1.2;
+  --text-badge--letter-spacing: 0.02em;
+  --text-badge--font-weight: 800;
 
-  --text-button-md: 16px;
+  --text-button-md: 15px;
   --text-button-md--line-height: 1.25;
-  --text-button-md--font-weight: 500;
+  --text-button-md--letter-spacing: -0.01em;
+  --text-button-md--font-weight: 700;
 
-  --text-button-sm: 14px;
-  --text-button-sm--line-height: 1.29;
-  --text-button-sm--font-weight: 500;
+  --text-button-sm: 13px;
+  --text-button-sm--line-height: 1.3;
+  --text-button-sm--letter-spacing: 0;
+  --text-button-sm--font-weight: 700;
 
-  --text-nav-link: 16px;
+  --text-nav-link: 13.5px;
   --text-nav-link--line-height: 1.25;
+  --text-nav-link--letter-spacing: -0.01em;
   --text-nav-link--font-weight: 600;
 
   /* ----------------------------------------------------------------
@@ -185,108 +195,53 @@
  * ================================================================ */
 
 :root {
-  /* Memphis palette */
-  --canvas: #ffffff;
-  --surface-soft: #f0f9f6;
-  --surface-strong: #e0f2ec;
-  --hairline: #222222;
-  --hairline-soft: #444444;
-  --border-strong: #222222;
-  --ink: #222222;
-  --body-text: #222222;
-  --muted: #555555;
-  --muted-soft: #777777;
-  --error: #ff3366;
-  --on-primary: #ffffff;
-  --memphis-bg: #5CE0D2;
-  --memphis-pink: #FF6B9D;
-  --memphis-yellow: #FFD93D;
-  --memphis-orange: #FF8C42;
-  --memphis-blue: #6C63FF;
-  --memphis-border: 3px solid #222222;
+  /* ----------------------------------------------------------------
+   * E+ 팔레트 — 크림 바탕, 검정 잉크, 노랑 포인트 하나.
+   * 날차 색은 미션 탭 섹션에서만 덮어쓴다 (색이 "며칠째"를 뜻한다).
+   * ---------------------------------------------------------------- */
+  --canvas: #FFFFFF;          /* 카드 본문 — 읽고 쓰는 곳은 늘 흰색 */
+  --paper: #F7F3EA;           /* 앱 바탕 */
+  --surface-soft: #FBF8F2;
+  --surface-strong: #F0EBE1;
+  --hairline: #E2DED3;
+  --hairline-soft: #EDE9DF;
+  --border-strong: #111114;
+  --ink: #111114;
+  --body-text: #2C2C32;
+  --muted: #6B665C;           /* 크림 위 4.5:1 이상 */
+  --muted-soft: #8A8478;
+  --error: #B5261F;
+  --on-primary: #FFFFFF;
+  --accent: #FFD93D;          /* 유일한 포인트색 */
+
+  --border-w: 3px;
+  --shadow-hard: 5px 5px 0 var(--ink);
 }
 
-/* === Before Mode — 설레임 (Mint/Turquoise) === */
-[data-mode="before"] {
-  --mode-bg: #E0FFF6;
-  --mode-bg-soft: #F0FFFA;
-  --mode-hero-gradient: none;
-  --mode-accent: #00BFA5;
-  --mode-accent-active: #009688;
-  --mode-accent-light: #B2DFDB;
-  --mode-accent-glow: #26D9C0;
-  --mode-hairline: #222222;
-  --mode-complete-bg: #F0FFFA;
-  --mode-complete-text: #999999;
-  /* 활성 탭 — 배경/글자 대비 6.8:1 이상, 인디케이터는 배경 위에서 읽혀야 한다 */
-  --mode-tab-bg: #00BFA5;
-  --mode-tab-fg: #222222;
-  --mode-tab-indicator: #222222;
-}
-
-/* === During Mode — 재미 (Yellow/Mint) === */
-[data-mode="during"] {
-  --mode-bg: #E8FFF5;
-  --mode-bg-soft: #F0FFF8;
-  --mode-hero-gradient: none;
-  --mode-accent: #FF8C42;
-  --mode-accent-active: #E07030;
-  --mode-accent-light: #FFD4B0;
-  --mode-accent-glow: #FFA060;
-  --mode-hairline: #222222;
-  --mode-complete-bg: #F0FFF8;
-  --mode-complete-text: #999999;
-  /* 활성 탭 — 배경/글자 대비 6.8:1 이상, 인디케이터는 배경 위에서 읽혀야 한다 */
-  --mode-tab-bg: #FF8C42;
-  --mode-tab-fg: #222222;
-  --mode-tab-indicator: #222222;
-}
-
-/* === After Mode — 차분함 (Lavender) === */
-[data-mode="after"] {
-  --mode-bg: #F0EEFF;
-  --mode-bg-soft: #F5F3FF;
-  --mode-hero-gradient: none;
-  --mode-accent: #6C63FF;
-  --mode-accent-active: #5550DD;
-  --mode-accent-light: #D5D2FF;
-  --mode-accent-glow: #8B85FF;
-  --mode-hairline: #222222;
-  --mode-complete-bg: #F5F3FF;
-  --mode-complete-text: #999999;
-  /* 활성 탭 — 배경/글자 대비 6.8:1 이상, 인디케이터는 배경 위에서 읽혀야 한다 */
-  --mode-tab-bg: #4F46C7;
-  --mode-tab-fg: #FFFFFF;
-  --mode-tab-indicator: #FFD93D;
-}
-
-/* === Mission Mode — 아빠와 아들 (Cream / Navy) === */
+/* ----------------------------------------------------------------
+ * 탭 모드 — 네 탭 모두 같은 바탕/잉크를 쓴다.
+ * 예전에는 탭마다 색이 달라서 한 화면에 색이 12개였다.
+ * ---------------------------------------------------------------- */
+[data-mode="before"],
+[data-mode="during"],
+[data-mode="after"],
 [data-mode="mission"] {
-  --mode-bg: #FFF3DC;
-  --mode-bg-soft: #FFF9EE;
+  --mode-bg: var(--paper);
+  --mode-bg-soft: var(--surface-soft);
   --mode-hero-gradient: none;
-  --mode-accent: #1F3A93;
-  --mode-accent-active: #162C70;
-  --mode-accent-light: #BFCCEF;
-  --mode-accent-glow: #3B5BC4;
-  --mode-hairline: #222222;
-  --mode-complete-bg: #FFF9EE;
-  --mode-complete-text: #999999;
-  /* 활성 탭 — 배경/글자 대비 6.8:1 이상, 인디케이터는 배경 위에서 읽혀야 한다 */
-  --mode-tab-bg: #1F3A93;
-  --mode-tab-fg: #FFFFFF;
-  --mode-tab-indicator: #FFD93D;
+  --mode-accent: var(--ink);
+  --mode-accent-active: #000000;
+  --mode-accent-light: var(--surface-strong);
+  --mode-accent-glow: #3A3A42;
+  --mode-hairline: var(--hairline);
+  --mode-complete-bg: var(--surface-soft);
+  --mode-complete-text: var(--muted-soft);
+  --mode-tab-fg: var(--ink);
+  --mode-tab-indicator: var(--ink);
 }
 
-/* === Memphis pattern background === */
 .mode-container {
-  transition: background-color 350ms ease-in-out;
-  background-image:
-    radial-gradient(circle, #FFD93D 2px, transparent 2px),
-    radial-gradient(circle, #FF6B9D 1.5px, transparent 1.5px),
-    radial-gradient(circle, #6C63FF 1px, transparent 1px);
-  background-size: 60px 60px, 40px 40px, 80px 80px;
-  background-position: 0 0, 20px 30px, 50px 10px;
+  transition: background-color 250ms ease-in-out;
 }
 
 /* === Delete animation === */
@@ -358,10 +313,9 @@
 }
 
 body {
-  font-family: 'Inter', 'Noto Sans KR', -apple-system, BlinkMacSystemFont,
-               'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  font-family: var(--font-sans);
   color: var(--ink);
-  background-color: var(--canvas);
+  background-color: var(--paper);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

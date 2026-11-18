@@ -12,11 +12,8 @@ export default function TabNav({ currentTab, onTabChange }: TabNavProps) {
     <div
       role="tablist"
       aria-label="여행 단계 및 미션 선택"
-      className="flex sticky top-0 z-50"
-      style={{
-        backgroundColor: "var(--canvas)",
-        borderBottom: "3px solid var(--ink)",
-      }}
+      className="flex sticky top-0 z-50 px-[16px]"
+      style={{ backgroundColor: "var(--paper)" }}
     >
       {TAB_KEYS.map((tabKey) => {
         const isActive = tabKey === currentTab;
@@ -28,25 +25,21 @@ export default function TabNav({ currentTab, onTabChange }: TabNavProps) {
             role="tab"
             aria-selected={isActive}
             onClick={() => onTabChange(tabKey)}
-            className="flex-1 h-12 relative text-nav-link transition-colors duration-200
+            className="flex-1 text-nav-link transition-colors duration-150
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
             style={{
+              // 글자 + 꽉 찬 밑줄. 밑줄은 검정이다 — 바로 아래 날차 띠는
+              // 날마다 색이 바뀌므로 거기 묶으면 2일차부터 색이 싸운다.
+              padding: "13px 0 12px",
               color: isActive ? "var(--mode-tab-fg)" : "var(--muted)",
-              fontWeight: isActive ? 800 : 500,
-              backgroundColor: isActive ? "var(--mode-tab-bg)" : "transparent",
-              textTransform: "uppercase",
-              fontSize: "16px",
-              letterSpacing: "0.2px",
+              fontWeight: isActive ? 800 : 600,
+              borderBottom: `4px solid ${
+                isActive ? "var(--mode-tab-indicator)" : "var(--hairline)"
+              }`,
               whiteSpace: "nowrap",
             }}
           >
             {theme.tabLabel}
-            {isActive && (
-              <span
-                className="absolute bottom-0 left-0 right-0"
-                style={{ height: "3px", backgroundColor: "var(--mode-tab-indicator)" }}
-              />
-            )}
           </button>
         );
       })}

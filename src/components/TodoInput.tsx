@@ -45,11 +45,10 @@ export default function TodoInput({
           focus:ring-2
         "
         style={{
-          height: "56px",
+          height: "54px",
           padding: "14px 12px",
           backgroundColor: "var(--canvas)",
-          borderRadius: "0px",
-          borderWidth: "3px",
+          borderWidth: "var(--border-w)",
           borderStyle: "solid",
           borderColor: "var(--ink)",
           fontSize: "16px",
@@ -82,15 +81,14 @@ export default function TodoInput({
           disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100
         "
         style={{
-          height: "56px",
-          minWidth: "56px",
-          padding: "14px 24px",
-          borderRadius: "0px",
-          backgroundColor: "var(--mode-accent)",
-          border: "3px solid var(--ink)",
+          height: "54px",
+          minWidth: "54px",
+          padding: "14px 20px",
+          backgroundColor: "var(--ink)",
+          border: "var(--border-w) solid var(--ink)",
           color: "var(--on-primary)",
-          fontSize: "16px",
-          fontWeight: 500,
+          fontSize: "15px",
+          fontWeight: 700,
           lineHeight: 1.25,
         }}
       >

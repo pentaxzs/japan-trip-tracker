@@ -27,7 +27,6 @@ function dayDateLabel(departureDate: string | null, day: number): string | null 
 interface MissionListProps {
   missions: MissionItem[];
   departureDate: string | null;
-  returnDate: string | null;
   newMissionId: string | null;
   /** 설정된 기간 (박) */
   nights: number;
@@ -57,7 +56,6 @@ function resolveDays(missions: MissionItem[], dayCount: number): number[] {
 export default function MissionList({
   missions,
   departureDate,
-  returnDate,
   newMissionId,
   nights,
   onNightsChange,
@@ -72,6 +70,9 @@ export default function MissionList({
 }: MissionListProps) {
   const days = resolveDays(missions, nights + 1);
   const [draft, setDraft] = useState<TripMember[] | null>(null);
+  // 참여자와 기간은 여행 시작할 때 한 번 정하면 끝이라 평소엔 접어둔다.
+  // 펼쳐두면 탭에서 첫 카드까지 가는 길에 블록이 세 개나 끼어든다.
+  const [setupOpen, setSetupOpen] = useState(false);
 
   const saveMembers = () => {
     if (!draft) return;
@@ -295,37 +296,15 @@ export default function MissionList({
     </div>
   );
 
-  const memberRow = (
-    <div className="mb-[14px]">
-      {draft ? (
-        memberEditor
-      ) : (
-        <div className="flex items-center gap-[8px]">
-          <button
-            onClick={() => setDraft(members)}
-            className="flex items-center gap-[6px] text-caption min-w-0"
-            style={{ color: "var(--ink)", fontWeight: 700 }}
-          >
-            <Pencil size={13} strokeWidth={2} style={{ color: "var(--muted)", flexShrink: 0 }} />
-            <span className="truncate">{members.map((m) => m.name).join(" · ")}</span>
-          </button>
-          <span className="flex-1" />
-          <button
-            onClick={onOpenImport}
-            className="flex items-center gap-[5px] px-[10px] h-[32px] text-caption flex-shrink-0"
-            style={{
-              border: "2px solid var(--ink)",
-              backgroundColor: "var(--canvas)",
-              color: "var(--ink)",
-              fontWeight: 700,
-            }}
-          >
-            <Download size={13} strokeWidth={2.5} style={{ color: "inherit" }} />
-            지난 여행에서
-          </button>
-        </div>
-      )}
-    </div>
+  const memberRow = draft ? memberEditor : (
+    <button
+      onClick={() => setDraft(members)}
+      className="flex items-center gap-[6px] text-caption self-start"
+      style={{ color: "var(--ink)" }}
+    >
+      <Pencil size={13} strokeWidth={2.4} style={{ color: "var(--muted)" }} />
+      참여자 — {members.map((m) => m.name).join(" · ")}
+    </button>
   );
 
   if (missions.length === 0) {
@@ -366,27 +345,46 @@ export default function MissionList({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-[16px] pb-[24px]">
-      {/* 둘 다 읽는 안내 — 한쪽에게 지시하지 않는다 */}
-      <div
-        className="mb-[16px] px-[14px] py-[12px]"
-        style={{
-          backgroundColor: "var(--mode-accent)",
-          border: "3px solid var(--ink)",
-          color: "var(--on-primary)",
-        }}
-      >
-        <p className="text-title-sm" style={{ fontWeight: 800, marginBottom: "4px" }}>
-          다 안 해도 돼요
-        </p>
-        <p className="text-body-md" style={{ lineHeight: 1.55, opacity: 0.95 }}>
-          하루에 한두 개만 꺼내 봐도 충분해요. 순서대로 할 필요도 없고,
-          빈칸은 비워둬도 괜찮아요.
-        </p>
-      </div>
-
-      {memberRow}
-      {durationRow}
+    <div className="flex-1 overflow-y-auto px-[16px] pb-[28px] pt-[4px]">
+      {/* 설정 — 참여자 · 기간. 평소엔 요약 한 줄 */}
+      {setupOpen ? (
+        <div className="mb-[14px] flex flex-col gap-[12px]">
+          {memberRow}
+          {durationRow}
+          <button
+            onClick={() => setSetupOpen(false)}
+            className="self-start text-caption"
+            style={{ color: "var(--muted)" }}
+          >
+            접기
+          </button>
+        </div>
+      ) : (
+        <div className="mb-[14px] flex items-center gap-[8px]">
+          <button
+            onClick={() => setSetupOpen(true)}
+            aria-expanded={false}
+            className="flex items-center gap-[6px] text-caption min-w-0"
+            style={{ color: "var(--ink)" }}
+          >
+            <Pencil size={13} strokeWidth={2.4} style={{ color: "var(--muted)", flexShrink: 0 }} />
+            <span className="truncate">
+              {members.map((m) => m.name).join(" · ")}
+            </span>
+            <span style={{ color: "var(--muted)" }}>· {nightsLabel(nights)}</span>
+          </button>
+          <span className="flex-1" />
+          <button
+            onClick={onOpenImport}
+            aria-label="지난 여행에서 카드 가져오기"
+            className="flex items-center gap-[5px] text-caption flex-shrink-0"
+            style={{ color: "var(--muted)" }}
+          >
+            <Download size={13} strokeWidth={2.4} style={{ color: "inherit" }} />
+            지난 여행
+          </button>
+        </div>
+      )}
 
       {days.map((day) => {
         const items = missions.filter((m) => m.day === day);
@@ -406,30 +404,25 @@ export default function MissionList({
               } as CSSProperties
             }
           >
-            {/* 날차 헤더 — 구분선 겸 추가 버튼 */}
+            {/* 날차 헤더 — 화면을 가로지르는 색띠. 스크롤 중 위치가 바로 보인다 */}
             <div
-              className="flex items-center gap-[8px] py-[8px] mb-[12px]"
-              style={{ borderBottom: `3px solid ${color.accent}` }}
+              className="flex items-center gap-[9px] px-[16px] py-[10px] mb-[14px] -mx-[16px]"
+              style={{ backgroundColor: color.accent, color: "var(--on-primary)" }}
             >
-              <span
-                className="px-[10px] py-[3px] text-title-sm"
-                style={{
-                  backgroundColor: "var(--mode-accent)",
-                  color: "var(--on-primary)",
-                  border: "2px solid var(--ink)",
-                  fontWeight: 800,
-                }}
-              >
+              <h2 className="text-title-md" style={{ fontWeight: 900 }}>
                 {day}일차
-              </span>
+              </h2>
               {dateLabel && (
-                <span className="text-caption" style={{ color: "var(--muted)", fontWeight: 600 }}>
+                <span className="text-caption-sm" style={{ opacity: 0.82 }}>
                   {dateLabel}
                 </span>
               )}
               <span className="flex-1" />
               {items.length > 0 && (
-                <span className="text-caption" style={{ color: "var(--muted)", fontWeight: 700 }}>
+                <span
+                  className="text-caption"
+                  style={{ color: "var(--accent)", fontVariantNumeric: "tabular-nums" }}
+                >
                   {done}/{items.length}
                 </span>
               )}
@@ -437,30 +430,21 @@ export default function MissionList({
                 onClick={() => onAdd(day)}
                 aria-label={`${day}일차에 순간 추가`}
                 className="flex items-center justify-center transition-all duration-150 active:scale-[0.95]"
-                style={{
-                  width: "30px",
-                  height: "30px",
-                  backgroundColor: "var(--canvas)",
-                  border: "2px solid var(--ink)",
-                  color: "var(--ink)",
-                }}
+                style={{ width: "28px", height: "28px", color: "var(--on-primary)" }}
               >
-                <Plus size={16} strokeWidth={3} style={{ color: "inherit" }} />
+                <Plus size={19} strokeWidth={3} style={{ color: "inherit" }} />
               </button>
             </div>
 
             {items.length === 0 ? (
               <p
-                className="text-body-md px-[14px] py-[16px] text-center"
-                style={{
-                  color: "var(--muted)",
-                  border: "2px dashed var(--hairline)",
-                }}
+                className="text-body-sm px-[14px] py-[18px] text-center"
+                style={{ color: "var(--muted)", border: "2px dashed var(--hairline)" }}
               >
                 아직 비어 있어요. + 로 추가해보세요
               </p>
             ) : (
-              <div className="flex flex-col gap-[14px]">
+              <div className="flex flex-col gap-[16px]">
                 {items.map((item, i) => (
                   <MissionCard
                     key={item.id}

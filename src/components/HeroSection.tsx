@@ -50,32 +50,31 @@ export default function HeroSection({ tab, departureDate, returnDate }: HeroSect
   const ddayMessage = getDdayMessage(tab, departureDate, returnDate);
 
   return (
-    <div className="px-[16px] py-[24px] text-center">
-      <div className="text-[40px] mb-[12px] inline-block" aria-hidden="true">
+    /* 리스트가 주인공이라 히어로는 한 줄로 줄였다.
+       예전에는 이모지+제목+부제+뱃지가 화면 1/3을 먹어서
+       정작 체크할 항목이 스크롤 밖에 있었다. */
+    <div className="px-[16px] pt-[12px] pb-[4px] flex items-center gap-[9px]">
+      <span className="text-[20px] leading-none flex-shrink-0" aria-hidden="true">
         {theme.heroEmoji}
-      </div>
+      </span>
       <h1
-        className="text-display-xl mb-[8px]"
-        style={{ color: "var(--ink)", whiteSpace: "pre-line" }}
+        className="text-title-md min-w-0 truncate"
+        style={{ color: "var(--ink)" }}
+        title={theme.heroTitle}
       >
-        {theme.heroTitle}
+        {theme.heroTitle.replace(/\n/g, " ")}
       </h1>
-      <p className="text-body-md" style={{ color: "var(--muted)" }}>
-        {theme.heroSubtitle}
-      </p>
       {ddayMessage && (
-        <p
-          className="text-title-md mt-[10px] inline-block px-[14px] py-[4px]"
+        <span
+          className="text-badge px-[8px] py-[3px] flex-shrink-0 ml-auto"
           style={{
-            color: "#ffffff",
-            fontWeight: 800,
-            backgroundColor: "#FF3366",
-            border: "2px solid var(--ink)",
-            fontSize: "16px",
+            color: "var(--ink)",
+            backgroundColor: "var(--accent)",
+            border: "2.5px solid var(--ink)",
           }}
         >
           {ddayMessage}
-        </p>
+        </span>
       )}
     </div>
   );

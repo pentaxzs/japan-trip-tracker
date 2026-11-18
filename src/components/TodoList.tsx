@@ -67,8 +67,15 @@ export default function TodoList({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-[16px] pb-[16px]">
-      <div className="flex flex-col gap-[8px]">
+    <div className="flex-1 overflow-y-auto px-[16px] pb-[20px]">
+      <div
+        className="flex flex-col overflow-hidden"
+        style={{
+          backgroundColor: "var(--canvas)",
+          border: "var(--border-w) solid var(--ink)",
+          boxShadow: "var(--shadow-hard)",
+        }}
+      >
         {todos.map((item) => (
           <TodoItemComponent
             key={item.id}

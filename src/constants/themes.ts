@@ -56,10 +56,10 @@ export type TabKey = TripPhase | "mission";
 export const TAB_KEYS: TabKey[] = ["before", "during", "after", "mission"];
 
 export const MISSION_THEME: PhaseTheme = {
-  accent: "#1F3A93",
-  accentActive: "#162C70",
-  accentLight: "#BFCCEF",
-  accentGlow: "#3B5BC4",
+  accent: "#111114",
+  accentActive: "#000000",
+  accentLight: "#F0EBE1",
+  accentGlow: "#3A3A42",
   heroTitle: "기억들을 남겨봐요",
   heroSubtitle: "같이 보고, 각자 한 줄씩 남겨요",
   heroEmoji: "🧭",
@@ -86,14 +86,15 @@ export interface DayColor {
 }
 
 /**
- * 1·2·3일차를 한눈에 구분하는 색. 전부 흰 글자 대비 5:1 이상이고,
- * 미션 탭 크림 배경(#FFF3DC) 위에서 서로 헷갈리지 않는다.
- * 여행이 3일을 넘으면 처음부터 다시 돈다.
+ * 날차를 한눈에 가르는 색. 전부 흰 글자 대비 5:1 이상이고,
+ * 색상(hue)과 명도가 둘 다 달라서 색각 이상에서도 구별된다.
+ * 네 개를 넘기면 처음부터 다시 돈다.
  */
 export const DAY_COLORS: DayColor[] = [
-  { accent: "#1F3A93", light: "#BFCCEF" }, // 1일차 — 네이비
-  { accent: "#C2185B", light: "#F8BBD0" }, // 2일차 — 마젠타
-  { accent: "#00796B", light: "#B2DFDB" }, // 3일차 — 틸
+  { accent: "#1F6B4D", light: "#D7E8DF" }, // 1일차 — 포레스트   흰글자 6.5:1
+  { accent: "#B5461F", light: "#F4DCD1" }, // 2일차 — 번트오렌지 흰글자 5.5:1
+  { accent: "#2B4C8C", light: "#D5DEEE" }, // 3일차 — 네이비     흰글자 8.5:1
+  { accent: "#5C2D6B", light: "#E2D6E6" }, // 4일차 — 플럼       흰글자 10.2:1
 ];
 
 export function dayColor(day: number): DayColor {

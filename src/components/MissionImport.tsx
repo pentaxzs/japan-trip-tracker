@@ -62,14 +62,14 @@ export default function MissionImport({ onClose, onImport }: MissionImportProps)
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-[520px] max-h-[85dvh] flex flex-col"
         style={{
-          backgroundColor: "var(--canvas)",
-          border: "3px solid var(--ink)",
+          backgroundColor: "var(--paper)",
+          border: "var(--border-w) solid var(--ink)",
         }}
       >
         {/* 머리말 */}
         <div
           className="flex items-center gap-[10px] px-[16px] py-[12px] flex-shrink-0"
-          style={{ borderBottom: "3px solid var(--ink)" }}
+          style={{ borderBottom: "var(--border-w) solid var(--ink)" }}
         >
           <h2 className="flex-1 text-title-md" style={{ color: "var(--ink)", fontWeight: 800 }}>
             지난 여행에서 가져오기
@@ -81,9 +81,7 @@ export default function MissionImport({ onClose, onImport }: MissionImportProps)
             style={{
               width: "32px",
               height: "32px",
-              borderRadius: "9999px",
-              backgroundColor: "var(--surface-strong)",
-              color: "var(--muted)",
+              color: "var(--ink)",
             }}
           >
             <X size={16} />
@@ -125,7 +123,7 @@ export default function MissionImport({ onClose, onImport }: MissionImportProps)
                         className="flex items-center gap-[8px] px-[12px] py-[10px] text-left"
                         style={{
                           border: "2px solid var(--ink)",
-                          backgroundColor: active ? "var(--mode-accent)" : "var(--canvas)",
+                          backgroundColor: active ? "var(--ink)" : "var(--canvas)",
                           color: active ? "var(--on-primary)" : "var(--ink)",
                         }}
                       >
@@ -162,7 +160,7 @@ export default function MissionImport({ onClose, onImport }: MissionImportProps)
                         )
                       }
                       className="text-caption"
-                      style={{ color: "var(--mode-accent)", fontWeight: 700 }}
+                      style={{ color: "var(--ink)", fontWeight: 700 }}
                     >
                       {picked.size === missions.length ? "전체 해제" : "전체 선택"}
                     </button>
@@ -179,7 +177,7 @@ export default function MissionImport({ onClose, onImport }: MissionImportProps)
                         className="flex items-start gap-[10px] px-[12px] py-[10px] text-left"
                         style={{
                           border: "2px solid var(--ink)",
-                          backgroundColor: on ? "var(--mode-bg-soft)" : "var(--canvas)",
+                          backgroundColor: on ? "var(--surface-soft)" : "var(--canvas)",
                         }}
                       >
                         <span
@@ -188,7 +186,7 @@ export default function MissionImport({ onClose, onImport }: MissionImportProps)
                             width: "20px",
                             height: "20px",
                             border: "2px solid var(--ink)",
-                            backgroundColor: on ? "var(--mode-accent)" : "var(--canvas)",
+                            backgroundColor: on ? "var(--ink)" : "var(--canvas)",
                           }}
                         >
                           {on && (
@@ -222,7 +220,7 @@ export default function MissionImport({ onClose, onImport }: MissionImportProps)
         {missions.length > 0 && (
           <div
             className="flex items-center gap-[8px] px-[16px] py-[12px] flex-shrink-0"
-            style={{ borderTop: "3px solid var(--ink)" }}
+            style={{ borderTop: "var(--border-w) solid var(--ink)" }}
           >
             <p className="flex-1 text-caption" style={{ color: "var(--muted)" }}>
               메모와 체크는 빼고 글만 가져옵니다
@@ -233,7 +231,7 @@ export default function MissionImport({ onClose, onImport }: MissionImportProps)
               className="px-[16px] h-[44px] text-button-md disabled:opacity-40"
               style={{
                 border: "2px solid var(--ink)",
-                backgroundColor: "var(--mode-accent)",
+                backgroundColor: "var(--ink)",
                 color: "var(--on-primary)",
                 fontWeight: 700,
               }}

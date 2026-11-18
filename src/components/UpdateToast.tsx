@@ -26,8 +26,8 @@ export default function UpdateToast({ visible, onRefresh }: UpdateToastProps) {
         style={{
           backgroundColor: "var(--ink)",
           color: "var(--canvas)",
-          borderRadius: "12px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+          border: "var(--border-w) solid var(--ink)",
+          boxShadow: "4px 4px 0 rgba(0,0,0,0.25)",
         }}
       >
         <span className="text-body-sm flex-1">
@@ -37,9 +37,9 @@ export default function UpdateToast({ visible, onRefresh }: UpdateToastProps) {
           onClick={onRefresh}
           className="flex items-center gap-[6px] px-[12px] py-[6px] text-button-sm shrink-0"
           style={{
-            backgroundColor: "var(--mode-accent, #3b82f6)",
-            color: "var(--on-primary, #fff)",
-            borderRadius: "8px",
+            backgroundColor: "var(--accent)",
+            color: "var(--ink)",
+            fontWeight: 800,
           }}
         >
           <RefreshCw size={14} />
@@ -65,10 +65,10 @@ export function MergeToast({ visible }: MergeToastProps) {
       <div
         className="flex items-center gap-[10px] px-[16px] py-[12px]"
         style={{
-          backgroundColor: "#16a34a",
+          backgroundColor: "#1F6B4D",
           color: "#fff",
-          borderRadius: "12px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+          border: "var(--border-w) solid var(--ink)",
+          boxShadow: "4px 4px 0 rgba(0,0,0,0.25)",
         }}
       >
         <Check size={16} />
