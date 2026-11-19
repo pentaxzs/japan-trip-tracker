@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 
 const TEXT_FIELDS = "input, textarea, [contenteditable]";
 
@@ -10,20 +10,20 @@ function isTypingTarget(el: Element | null): boolean {
 }
 
 /**
- * 키보드가 화면 아래를 가린 높이(px).
+ * 입력줄이 보이는 영역 아래로 얼마나 밀려났는지(px).
  *
- * iOS는 키보드가 올라와도 레이아웃 뷰포트가 그대로다. 보이는 영역만 줄어든다.
- * 그래서 `sticky bottom-0`은 키보드 뒤에 붙고, iOS가 포커스된 입력을 보이게
- * 하려고 페이지를 끌어올리면 입력줄 아래로 목록이 비친다.
+ * 키보드 높이를 추정해서 그만큼 올리면 안 된다. iOS는 포커스된 칸을 보이게
+ * 하려고 페이지를 스스로 끌어올리는데, 거기에 또 올리면 두 번 올라가 솟구친다.
  *
- * 높이는 innerHeight - visualViewport.height 로만 잰다.
- * offsetTop을 섞으면 고무줄 스크롤(맨 아래에서 더 당기기, 맨 위에서 당기기)에
- * 출렁이는 값이 들어와 키보드도 없는데 입력줄이 위로 솟는다.
+ * 그래서 추정하지 않고 "이 요소가 실제로 얼마나 가려졌는지"를 잰다.
+ *   가려진 양 = 보정을 뺀 입력줄 바닥 − 보이는 영역 바닥
+ * iOS가 이미 올려놨으면 0이 나와 아무 일도 하지 않고, 키보드 뒤에 숨어
+ * 있으면 딱 그만큼만 올라온다. 어느 쪽이든 결과가 같다.
  *
- * 입력칸에 포커스가 있을 때만 적용한다. 주소창이 접히거나 하는 다른 이유로
- * 보이는 높이가 변할 때 입력줄이 따라 움직이면 안 된다.
+ * 입력칸에 포커스가 있을 때만 잰다. 주소창이 접히거나 고무줄 스크롤로
+ * 보이는 높이가 출렁일 때 입력줄이 따라 움직이면 안 된다.
  */
-export function useKeyboardInset(): number {
+export function useKeyboardInset(ref: RefObject<HTMLElement | null>): number {
   const [inset, setInset] = useState(0);
 
   useEffect(() => {
@@ -31,30 +31,39 @@ export function useKeyboardInset(): number {
     if (!vv) return;
 
     let frame = 0;
+    let current = 0;
+
     const update = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        if (!isTypingTarget(document.activeElement)) {
+        const el = ref.current;
+        if (!el || !isTypingTarget(document.activeElement)) {
+          current = 0;
           setInset(0);
           return;
         }
-        const hidden = window.innerHeight - vv.height;
-        // 1px 미만은 반올림 오차라 무시한다
-        setInset(hidden > 1 ? Math.round(hidden) : 0);
+        // 지금 걸려 있는 보정을 되돌려 원래 바닥을 구한다 (되먹임 방지)
+        const naturalBottom = el.getBoundingClientRect().bottom + current;
+        const visibleBottom = vv.offsetTop + vv.height;
+        const hidden = Math.round(naturalBottom - visibleBottom);
+        current = hidden > 1 ? hidden : 0;
+        setInset(current);
       });
     };
 
     update();
     vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
     document.addEventListener("focusin", update);
     document.addEventListener("focusout", update);
     return () => {
       cancelAnimationFrame(frame);
       vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
       document.removeEventListener("focusin", update);
       document.removeEventListener("focusout", update);
     };
-  }, []);
+  }, [ref]);
 
   return inset;
 }

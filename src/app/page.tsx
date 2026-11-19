@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTodos } from "@/hooks/useTodos";
 import { useSwipeTabs } from "@/hooks/useSwipeTabs";
 import { useKeyboardInset } from "@/hooks/useKeyboardInset";
@@ -50,7 +50,8 @@ export default function Home() {
   } = useTodos();
 
   const isMission = tab === "mission";
-  const keyboardInset = useKeyboardInset();
+  const inputBarRef = useRef<HTMLDivElement>(null);
+  const keyboardInset = useKeyboardInset(inputBarRef);
 
   // 새 탭이 들어오는 방향. 다음 탭이면 오른쪽에서, 이전 탭이면 왼쪽에서.
   const [enterFrom, setEnterFrom] = useState<1 | -1>(1);
@@ -243,6 +244,7 @@ export default function Home() {
             키보드가 가린 만큼 올려서 그 아래로 목록이 비치지 않게 한다 */}
         {!isMission && (
           <div
+            ref={inputBarRef}
             className="sticky bottom-0 border-t"
             style={{
               backgroundColor: "var(--mode-bg)",
