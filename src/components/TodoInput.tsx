@@ -82,14 +82,17 @@ export default function TodoInput({
         "
         style={{
           height: "54px",
-          minWidth: "54px",
-          padding: "14px 20px",
+          padding: "0 18px",
           backgroundColor: "var(--ink)",
           border: "var(--border-w) solid var(--ink)",
           color: "var(--on-primary)",
           fontSize: "15px",
           fontWeight: 700,
           lineHeight: 1.25,
+          // minWidth를 주면 flex의 min-width:auto가 꺼져서 버튼이 글자보다
+          // 좁게 찌그러진다. 줄바꿈을 막고 패딩이 폭을 정하게 둔다.
+          whiteSpace: "nowrap",
+          flexShrink: 0,
         }}
       >
         추가
