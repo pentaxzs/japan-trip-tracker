@@ -17,6 +17,9 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   viewportFit: "cover",
+  // 크롬 계열은 이것만으로 키보드가 레이아웃 뷰포트를 줄인다.
+  // iOS는 지원하지 않아 useKeyboardInset이 따로 보정한다.
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({

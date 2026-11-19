@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { useTodos } from "@/hooks/useTodos";
 import { useSwipeTabs } from "@/hooks/useSwipeTabs";
+import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 import { TAB_KEYS, TabKey } from "@/constants/themes";
 import { tripNights, nightsPatch } from "@/lib/trip";
 import TabNav from "@/components/TabNav";
@@ -49,6 +50,7 @@ export default function Home() {
   } = useTodos();
 
   const isMission = tab === "mission";
+  const keyboardInset = useKeyboardInset();
 
   // 새 탭이 들어오는 방향. 다음 탭이면 오른쪽에서, 이전 탭이면 왼쪽에서.
   const [enterFrom, setEnterFrom] = useState<1 | -1>(1);
@@ -237,13 +239,15 @@ export default function Home() {
 
         </div>
 
-        {/* Input Area — 미션 탭은 날차 헤더의 + 로 추가한다 */}
+        {/* 입력줄 — 미션 탭은 날차 헤더의 + 로 추가한다.
+            키보드가 가린 만큼 올려서 그 아래로 목록이 비치지 않게 한다 */}
         {!isMission && (
           <div
             className="sticky bottom-0 border-t"
             style={{
               backgroundColor: "var(--mode-bg)",
               borderColor: "var(--hairline)",
+              transform: keyboardInset ? `translateY(-${keyboardInset}px)` : undefined,
             }}
           >
             <TodoInput onAdd={addTodo} />
